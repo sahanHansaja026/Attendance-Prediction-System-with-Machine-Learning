@@ -1,0 +1,70 @@
+.token {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.token .titleofqr {
+    color: #0400FF;
+    font-size: 45px;
+    font-weight: bold;
+}
+
+.token .pin {
+    font-size: 45px;
+    color: #000;
+    font-weight: bold;
+}
+
+.token .btnsepcontainer {
+    width: 1000px;
+    /* or 100% if you want it responsive */
+    height: auto;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    /* push items to both sides */
+    padding: 20px;
+    /* optional: add some padding */
+}
+
+.nextbtn,
+.cancelbtn {
+    width: 300px;
+    /* optional */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.token .cancel {
+    background-color: #343435;
+    border: 0px;
+    border-color: none;
+    width: 100%;
+    padding: 12px;
+    color: #fff;
+    font-size: 20px;
+    margin-top: 20px;
+    border-radius: 8px;
+}
+
+.token .cancel:hover {
+    background-color: #2a58ca;
+}
+.token .next {
+    background-color: #3b6ff2;
+    border: 0px;
+    border-color: none;
+    width: 100%;
+    padding: 12px;
+    color: #fff;
+    font-size: 20px;
+    margin-top: 20px;
+    border-radius: 8px;
+}
+
+.token .next:hover {
+    background-color: #2a58ca;
+}

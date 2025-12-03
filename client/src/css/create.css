@@ -1,0 +1,148 @@
+.create {
+    background-color: white;
+}
+
+.create .form {
+    padding-right: 130px;
+    padding-left: 8px;
+}
+
+.form .label {
+    font-size: 20px;
+    color: #000;
+}
+
+.create .inputcontainer {
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+}
+
+.create input[type="text"] {
+    width: 100%;
+    padding: 12px 0px;
+    border-bottom: 1px solid #000000;
+    border-top: 0px;
+    border-left: 0px;
+    border-right: 0px;
+    border-radius: 0px;
+    font-size: 18px;
+    outline: none;
+    transition: 0.2s;
+}
+
+.create input[type="text"]:focus {
+    border-bottom: 1px solid #3b6ff2;
+    border-top: 0px;
+    border-left: 0px;
+    border-right: 0px;
+}
+
+.create select {
+    width: 100%;
+    padding: 12px 0px;
+    border-bottom: 1px solid #000000;
+    border-top: 0px;
+    border-left: 0px;
+    border-right: 0px;
+    border-radius: 0px;
+    font-size: 18px;
+    background-color: #ffffff;
+    outline: none;
+    transition: 0.2s;
+    appearance: none;
+    /* Remove default arrow */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+
+.create select:focus {
+    border-bottom: 1px solid #3b6ff2;
+}
+
+.create .select-container {
+    position: relative;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
+.create .select-container::after {
+    content: "▼";
+    font-size: 12px;
+    color: #000;
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+
+.time-row {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.time-input {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.time-input input {
+    width: 35px;
+    padding: 5px;
+    text-align: center;
+    border: none;
+    border-bottom: 1px solid #999;
+    font-size: 18px;
+    outline: none;
+}
+
+.time-input span {
+    font-size: 18px;
+    color: #555;
+}
+
+.time-input select {
+    border: none;
+    border-bottom: 1px solid #999;
+    font-size: 16px;
+    background: none;
+    outline: none;
+    cursor: pointer;
+}
+
+.to-text {
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.create .signin {
+    background-color: #0400FF;
+    border: 0px;
+    border-color: none;
+    width: 100%;
+    padding: 12px;
+    color: #fff;
+    font-size: 20px;
+    margin-top: 20px;
+    border-radius: 8px;
+}
+
+.create .signin:hover {
+    background-color: #2a58ca;
+}
+
+.create .dropdown {
+    position: absolute;
+    top: 45px;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    max-height: 150px;
+    overflow-y: auto;
+    z-index: 5;
+}

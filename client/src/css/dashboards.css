@@ -1,0 +1,112 @@
+.dashboard {
+    background-color: #fff;
+}
+
+.dashboard .container {
+    width: 100%;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.dashboard .topbar {
+    width: 80%;
+    padding: 12px;
+    background-color: #0400FF;
+    border-radius: 15px;
+
+    /* Important Flexbox settings */
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    /* left + right */
+    align-items: center;
+    /* vertical center */
+}
+
+.dashboard .topcontainer1 {
+    text-align: start;
+}
+
+.dashboard .title {
+    font-size: 22px;
+    color: #fff;
+}
+
+.dashboard .userprofile {
+    color: white;
+    text-align: right;
+}
+
+.dashboard .maincontainer{
+    display: flex;
+    flex-direction: row;
+}
+.sidebar {
+    padding: 12px;
+    border: 2px solid #000;
+    height: 500px;
+    width: 40px;
+    border-radius: 8px;
+    flex-direction: column;
+    gap: 15px;
+
+    justify-content: center;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 25px;
+    /* FIXED */
+    flex-direction: column;
+    /* center icons */
+    gap: 15px;
+
+}
+
+/* Sidebar items */
+.sidebar-item {
+    width: 100%;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+
+    position: relative;
+    /* required for highlight bar */
+}
+
+/* Hover blue bar */
+.sidebar-item:hover::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    width: 2px;
+    height: 60%;
+    background-color: #0400FF;
+    border-radius: 4px;
+}
+
+/* Active blue bar */
+.sidebar-item.active::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    width: 2px;
+    height: 60%;
+    background-color: #0400FF;
+    border-radius: 4px;
+}
+
+.sidebar .icon {
+    width: 30px;
+    height: 30px;
+}
+.dashboard .pagecontainer{
+    width: 100%;
+    height: 100%;
+    padding: 12px;
+    margin-left: 60px;
+}

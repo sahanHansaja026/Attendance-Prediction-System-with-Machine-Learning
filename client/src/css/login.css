@@ -1,0 +1,138 @@
+.container {
+    display: flex;
+    flex-direction: row;
+    width: '100%';
+}
+
+.subcontainer {
+    flex-direction: column;
+}
+
+.subcontainer p {
+    font-size: 45px;
+    color: black;
+    font-weight: bold;
+    margin-left: 50px;
+}
+
+.imageclass {
+    width: 550px;
+    height: 500px;
+    margin-top: -80px;
+}
+
+.formcontainer {
+    flex-direction: column;
+    padding-left: 250px;
+    margin-top: 150px;
+}
+
+.inputcontainer {
+    flex-direction: column;
+    width: 450px;
+    margin-bottom: 25px;
+}
+
+.label {
+    font-size: 30px;
+    color: black;
+}
+
+input[type="email"],
+input[type="password"],
+input[type="text"] {
+    width: 100%;
+    padding: 12px 0px;
+    border-bottom: 1px solid #000000;
+    border-top: 0px;
+    border-left: 0px;
+    border-right: 0px;
+    border-radius: 0px;
+    font-size: 20px;
+    outline: none;
+    transition: 0.2s;
+}
+
+/* Focus effect */
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="text"]:focus {
+    border-bottom: 1px solid #3b6ff2;
+    border-top: 0px;
+    border-left: 0px;
+    border-right: 0px;
+}
+
+.google-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: white;
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.google-btn:hover {
+    background-color: #f5f5f5;
+}
+
+.google-logo {
+    width: 20px;
+    height: 20px;
+}
+
+.signin {
+    background-color: #3b6ff2;
+    border: 0px;
+    border-color: none;
+    width: 100%;
+    padding: 12px;
+    color: #fff;
+    font-size: 20px;
+    margin-top: 20px;
+    border-radius: 8px;
+}
+
+.signin:hover {
+    background-color: #2a58ca;
+}
+.navigate {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.navigate-link {
+    position: relative;
+    color: #3b6ff2;
+    font-weight: 600;
+    text-decoration: none;
+    font-size: 16px;
+    transition: color 0.3s;
+}
+
+.navigate-link:hover {
+    color: #1f4fc0;
+}
+
+/* Animated underline effect */
+.navigate-link .underline {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -2px;
+    height: 2px;
+    width: 0%;
+    background-color: #3b6ff2;
+    transition: 0.3s;
+}
+
+.navigate-link:hover .underline {
+    width: 100%;
+}
