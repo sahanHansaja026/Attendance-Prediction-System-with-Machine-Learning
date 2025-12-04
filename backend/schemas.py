@@ -69,3 +69,21 @@ class CourseResponse(BaseModel):
 
     class Config:
         orm_mode = True
+
+class GustCreate(BaseModel):
+    name: str
+    email: EmailStr
+    index: str
+    password: str
+    graduation_year: int
+
+
+class GustResponse(BaseModel):
+    gust_id: int
+    name: str
+    email: EmailStr
+    index: str
+    graduation_year: int
+
+    class Config:
+        orm_mode = True

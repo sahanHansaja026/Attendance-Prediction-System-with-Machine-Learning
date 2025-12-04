@@ -6,9 +6,12 @@ import AnalaysisIcon from "../assets/images/analy.svg";
 import HistoryIcon from "../assets/images/icon3.svg";
 import LOgoutIcon from "../assets/images/icon2.svg";
 import { useNavigate } from "react-router-dom";
+import AddUsersIcon from "../assets/images/icon4.svg";
 
 // components
 import HomePage from "./compnents/create";
+import ShowUsers from "./compnents/showuser";
+import AddUsers from "./compnents/adduser";
 
 type User = {
     username: string;
@@ -20,14 +23,16 @@ export default function Dashboard() {
     const [user, setUser] = useState<User | null>(null);
     const [error, setError] = useState<string>("");
     const [activePage, setActivePage] = useState("home");
+
     const pageTitles: Record<string, string> = {
         home: "Create Session",
         analysis: "Analytics",
-        history: "History"
+        history: "History",
+        showuser: "View Users",
+        adduser: "Add New User",
     };
+
     const navigate = useNavigate();
-
-
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -35,10 +40,9 @@ export default function Dashboard() {
                 const userData = await authService.getUserData();
                 setUser(userData);
             } catch (error: any) {
-                // If token expired, alert user then navigate to login
                 if (error.message === "Session expired. Please log in again.") {
-                    alert(error.message); // show alert
-                    navigate("/");    
+                    alert(error.message);
+                    navigate("/");
                 } else {
                     console.error("Unknown error fetching user data:", error);
                 }
@@ -51,11 +55,9 @@ export default function Dashboard() {
     if (error) return <div>Error: {error}</div>;
 
     const handleLogout = () => {
-        // remove token and any stored user data
         localStorage.removeItem("token");
         localStorage.removeItem("username");
 
-        // optionally, show alert before logout
         if (window.confirm("Are you sure you want to logout?")) {
             navigate("/");
         }
@@ -71,17 +73,17 @@ export default function Dashboard() {
 
                     <div className="userprofile">
                         {user ? (
-                            <div>
-                                <p>{user.username}</p>
-                            </div>
+                            <p>{user.username}</p>
                         ) : (
                             <p>Loading user data...</p>
                         )}
                     </div>
                 </div>
             </div>
+
             <div className="maincontainer">
                 <div className="sidebar">
+
                     <div
                         className={`sidebar-item ${activePage === "home" ? "active" : ""}`}
                         onClick={() => setActivePage("home")}
@@ -104,9 +106,13 @@ export default function Dashboard() {
                     </div>
 
                     <div
-                        className={`sidebar-item ${activePage === "history" ? "active" : ""}`}
-                        onClick={handleLogout}
+                        className={`sidebar-item ${activePage === "showuser" ? "active" : ""}`}
+                        onClick={() => setActivePage("showuser")}
                     >
+                        <img src={AddUsersIcon} alt="add users" className="iconadd" />
+                    </div>
+
+                    <div className="sidebar-item" onClick={handleLogout}>
                         <img src={LOgoutIcon} alt="Logout" className="icon" />
                     </div>
                 </div>
@@ -115,10 +121,16 @@ export default function Dashboard() {
                     {activePage === "home" && <HomePage />}
                     {activePage === "analysis" && <div>Analysis Page Content</div>}
                     {activePage === "history" && <div>History Page Content</div>}
-                </div>
 
+                    {/* Show Users Page — pass setActivePage so button can open adduser */}
+                    {activePage === "showuser" && (
+                        <ShowUsers setActivePage={setActivePage} />
+                    )}
+
+                    {/* Add User Form Page */}
+                    {activePage === "adduser" && <AddUsers />}
+                </div>
             </div>
-            
         </div>
     );
 }

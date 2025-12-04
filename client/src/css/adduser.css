@@ -1,0 +1,139 @@
+.adduser {
+    background-color: #fff;
+}
+
+.adduser .form {
+    padding-right: 130px;
+    padding-left: 8px;
+}
+
+.adduser .label {
+    font-size: 20px;
+    color: #000;
+}
+
+.adduser .inputcontainer {
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+}
+
+.adduser input[type="text"] {
+    width: 100%;
+    padding: 12px 0px;
+    border-bottom: 1px solid #000000;
+    border-top: 0px;
+    border-left: 0px;
+    border-right: 0px;
+    border-radius: 0px;
+    font-size: 18px;
+    outline: none;
+    transition: 0.2s;
+}
+
+.adduser input[type="text"]:focus {
+    border-bottom: 1px solid #3b6ff2;
+    border-top: 0px;
+    border-left: 0px;
+    border-right: 0px;
+}
+
+.adduser .batchcontainer {
+    display: flex;
+    flex-direction: row;
+    gap: 150px;
+}
+
+.adduser .input-error {
+    border-bottom: 1px solid red !important;
+    border-top: 0px;
+    border-left: 0px;
+    border-right: 0px;
+}
+
+.adduser .bagap {
+    width: 100%;
+    gap: 10px;
+}
+
+.adduser .error-text {
+    color: red;
+    font-size: 13px;
+    margin-top: 5px;
+}
+
+.adduser .adduserbtn {
+    background-color: #0400FF;
+    border: 0px;
+    border-color: none;
+    width: 100%;
+    padding: 12px;
+    color: #fff;
+    font-size: 20px;
+    margin-top: 20px;
+    border-radius: 8px;
+}
+
+.create .adduserbtn:hover {
+    background-color: #2a58ca;
+}
+
+.adduser .select {
+    width: 100%;
+    padding: 10px 12px;
+    border-bottom: 1px solid #000000;
+    font-size: 18px;
+    background-color: #fff;
+    outline: none;
+    transition: border-color 0.2s ease;
+    border-top: 0px;
+    border-left: 0px;
+    border-right: 0px;
+}
+
+.adduser .select:focus {
+    border-color: #4a90e2;
+}
+
+/* Style select arrow */
+.adduser .select::-ms-expand {
+    display: none;
+}
+
+.adduser .select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg fill='black' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 16px;
+}
+.spinner {
+    border: 3px solid #f3f3f3;
+    /* Light grey */
+    border-top: 3px solid #3498db;
+    /* Blue */
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    animation: spin 1s linear infinite;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 8px;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.adduserbtn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}

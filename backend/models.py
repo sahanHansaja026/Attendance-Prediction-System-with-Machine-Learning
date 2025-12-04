@@ -49,3 +49,13 @@ class Course(Base):
     courseindex=Column(String,nullable=False)
     owner=Column(Integer, nullable=False)
 
+class Gust(Base):
+    __tablename__="gusts"
+    
+    gust_id=Column(Integer, primary_key=True, index=True)
+    name=Column(String,nullable=False)
+    email = Column(String, unique=True, index=True, nullable=False)
+    index=Column(String, unique=True, index=True, nullable=False)
+    hashed_password = Column(String, nullable=False)
+    graduation_year = Column(Integer, nullable=False)   
+    
