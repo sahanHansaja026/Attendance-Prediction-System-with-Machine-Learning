@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -7,140 +6,166 @@ void main() {
   runApp(const MainApp());
 }
 
-Future<void> LoginUser(String email, String password) async {
-  final url = Uri.parse('http://YOUR_BACKEND_IP:8000/login');
-
-  try {
-    final response = await http.post(
-      url,
-      headers: {"content-type": "appication/json"},
-      body: jsonEncode({"email": email, "password": password}),
-    );
-    if (response.statusCode == 200) {
-      // Login successful
-      final data = jsonDecode(response.body);
-      print("Login success: $data");
-    } else {
-      // Login failed
-      print("Error: ${response.statusCode} ${response.body}");
-    }
-  } catch (e) {
-    print("Exception: $e");
-  }
-}
-
 class MainApp extends StatelessWidget {
   const MainApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(home: MyHomePage());
+    return MaterialApp(
+      debugShowCheckedModeBanner: false, // remove debug banner
+      home: const MyHomePage(),
+    );
   }
 }
 
 class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key});
+
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  TextEditingController textController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
-  String result = "";
+  bool isLoading = false; // loading state
+  String message = ""; // success/error message
+
+  // Function to call FastAPI login
+  Future<void> loginUser(String email, String password) async {
+    final url = Uri.parse('http://192.168.1.7:8000/gust_login'); // FastAPI endpoint
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({"email": email, "password": password}),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        setState(() {
+          message = "Login success: ${data['message']}";
+        });
+      } else {
+        setState(() {
+          message = "Login failed: ${response.body}";
+        });
+      }
+    } catch (e) {
+      setState(() {
+        message = "Error: $e";
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
-          // Makes screen scrollable when keyboard appears
           child: Padding(
             padding: const EdgeInsets.all(20.0),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start, // Align left
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(height: 0),
-                // image input
+                const SizedBox(height: 20),
+
+                // Centered image
                 Center(
-                  // image want to in center
                   child: Image.asset(
                     'assets/images/login.png',
-                    width: 300,
-                    height: 300,
+                    width: 250,
+                    height: 250,
                   ),
                 ),
 
-                // text field // left
-                Text(
-                  "Welcome To SLTC ",
-                  style: TextStyle(fontSize: 24, color: Colors.black),
-                  textAlign: TextAlign.left,
+                const SizedBox(height: 20),
+
+                // Welcome texts
+                const Text(
+                  "Welcome To SLTC",
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
-
-                SizedBox(height: 5),
-
-                Text(
+                const SizedBox(height: 5),
+                const Text(
                   "Attendance Management System",
-                  style: TextStyle(fontSize: 24, color: Colors.black),
-                  textAlign: TextAlign.left,
+                  style: TextStyle(fontSize: 20),
                 ),
 
-                // input field
-                SizedBox(height: 20.0),
+                const SizedBox(height: 30),
 
+                // Email field
                 TextField(
-                  controller: textController,
-                  decoration: InputDecoration(
+                  controller: emailController,
+                  decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: "Email",
                   ),
                 ),
 
-                SizedBox(height: 20.0),
+                const SizedBox(height: 20),
 
-                // password input
+                // Password field
                 TextField(
                   controller: passwordController,
-                  obscureText: true, // hide text like dots
-                  decoration: InputDecoration(
+                  obscureText: true,
+                  decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: "Password",
                   ),
                 ),
 
-                SizedBox(height: 50),
+                const SizedBox(height: 30),
 
-                // button
+                // Login button with loading
                 Center(
                   child: ElevatedButton(
-                    onPressed: () {
-                      String email = textController.text;
-                      String password =passwordController.text;
+                    onPressed: isLoading
+                        ? null
+                        : () async {
+                            String email = emailController.text;
+                            String password = passwordController.text;
 
-                      LoginUser(email, password); // call the API
-                    },
+                            setState(() {
+                              isLoading = true;
+                              message = "";
+                            });
+
+                            await loginUser(email, password);
+
+                            setState(() {
+                              isLoading = false;
+                            });
+                          },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromARGB(255, 0, 81, 255),
-                      minimumSize: Size(400, 50),
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 5,
-                      ), // padding in button
+                      minimumSize: const Size(400, 50),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(
-                          20,
-                        ), // border redius
+                        borderRadius: BorderRadius.circular(20),
                       ),
-                      elevation: 5,
                     ),
-                    child: Text(
-                      "Login",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 25, color: Colors.white),
-                    ),
+                    child: isLoading
+                        ? const CircularProgressIndicator(color: Colors.white)
+                        : const Text(
+                            "Login",
+                            style: TextStyle(fontSize: 25, color: Colors.white),
+                          ),
                   ),
                 ),
+
+                const SizedBox(height: 20),
+
+                // Message display
+                if (message.isNotEmpty)
+                  Center(
+                    child: Text(
+                      message,
+                      style: const TextStyle(fontSize: 18, color: Colors.red),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
               ],
             ),
           ),

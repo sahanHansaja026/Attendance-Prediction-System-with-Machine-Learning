@@ -2,7 +2,9 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from database import get_db
 import models, schemas
-from auth import hash_password  # 🔥 Use your existing hashing
+from auth import hash_password ,veryfy_password # 🔥 Use your existing hashing
+
+from gustauth import create_access_token, create_refresh_token
 
 router = APIRouter()
 
@@ -35,3 +37,33 @@ def add_gust(gust: schemas.GustCreate, db: Session = Depends(get_db)):
     db.refresh(new_gust)
 
     return new_gust
+
+@router.post("/gust_login")
+def gust_login(data: schemas.GustLogin, db: Session = Depends(get_db)):
+    email = data.email
+    password = data.password
+
+    gust = db.query(models.Gust).filter(models.Gust.email == email).first()
+
+    if not gust:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    if not veryfy_password(password, gust.hashed_password):
+        raise HTTPException(status_code=400, detail="Incorrect password")
+
+    access_token = create_access_token({"sub": gust.email})
+    refresh_token = create_refresh_token({"sub": gust.email})
+
+    gust.refresh_token = refresh_token
+    db.commit()
+
+    return {
+        "access_token": access_token,
+        "refresh_token": refresh_token,
+        "token_type": "bearer",
+        "user": {
+            "name": gust.name,
+            "email": gust.email,
+            "index": gust.index
+        }
+    }

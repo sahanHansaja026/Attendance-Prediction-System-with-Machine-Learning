@@ -87,3 +87,7 @@ class GustResponse(BaseModel):
 
     class Config:
         orm_mode = True
+
+class GustLogin(BaseModel):
+    email: str
+    password: str

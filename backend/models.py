@@ -58,4 +58,4 @@ class Gust(Base):
     index=Column(String, unique=True, index=True, nullable=False)
     hashed_password = Column(String, nullable=False)
     graduation_year = Column(Integer, nullable=False)   
-    
+    refresh_token = Column(String, nullable=True)
