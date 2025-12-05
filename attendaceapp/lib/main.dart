@@ -1,19 +1,29 @@
 import 'dart:convert';
+import 'package:attendaceapp/config/api.dart';
+import 'package:attendaceapp/home.dart';
+import 'package:attendaceapp/session_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
-void main() {
-  runApp(const MainApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await UserSession.loadSession();  
+
+  runApp(MainApp(isLoggedIn: UserSession.isLoggedIn()));
 }
 
 class MainApp extends StatelessWidget {
-  const MainApp({super.key});
+  final bool isLoggedIn;
+
+  const MainApp({super.key, required this.isLoggedIn});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false, // remove debug banner
-      home: const MyHomePage(),
+      debugShowCheckedModeBanner: false,
+      home: isLoggedIn ? MyDashboard() : MyHomePage(),
     );
   }
 }
@@ -29,12 +39,11 @@ class _MyHomePageState extends State<MyHomePage> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
-  bool isLoading = false; // loading state
-  String message = ""; // success/error message
+  bool isLoading = false;
+  String message = "";
 
-  // Function to call FastAPI login
   Future<void> loginUser(String email, String password) async {
-    final url = Uri.parse('http://192.168.1.7:8000/gust_login'); // FastAPI endpoint
+    final url = Uri.parse('$API_URL/gust_login');
 
     try {
       final response = await http.post(
@@ -45,9 +54,20 @@ class _MyHomePageState extends State<MyHomePage> {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        setState(() {
-          message = "Login success: ${data['message']}";
-        });
+
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString("access_token", data["access_token"]);
+        await prefs.setString("refresh_token", data["refresh_token"]);
+        await prefs.setString("name", data["user"]["name"]);
+        await prefs.setString("email", data["user"]["email"]);
+        await prefs.setString("index", data["user"]["index"]);
+
+        await UserSession.loadSession();
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => MyDashboard()),
+        );
       } else {
         setState(() {
           message = "Login failed: ${response.body}";
@@ -71,8 +91,6 @@ class _MyHomePageState extends State<MyHomePage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 20),
-
-                // Centered image
                 Center(
                   child: Image.asset(
                     'assets/images/login.png',
@@ -80,10 +98,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     height: 250,
                   ),
                 ),
-
                 const SizedBox(height: 20),
-
-                // Welcome texts
                 const Text(
                   "Welcome To SLTC",
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
@@ -93,10 +108,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   "Attendance Management System",
                   style: TextStyle(fontSize: 20),
                 ),
-
                 const SizedBox(height: 30),
-
-                // Email field
                 TextField(
                   controller: emailController,
                   decoration: const InputDecoration(
@@ -104,10 +116,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     labelText: "Email",
                   ),
                 ),
-
                 const SizedBox(height: 20),
-
-                // Password field
                 TextField(
                   controller: passwordController,
                   obscureText: true,
@@ -116,28 +125,21 @@ class _MyHomePageState extends State<MyHomePage> {
                     labelText: "Password",
                   ),
                 ),
-
                 const SizedBox(height: 30),
-
-                // Login button with loading
                 Center(
                   child: ElevatedButton(
                     onPressed: isLoading
                         ? null
                         : () async {
-                            String email = emailController.text;
-                            String password = passwordController.text;
-
                             setState(() {
                               isLoading = true;
                               message = "";
                             });
 
-                            await loginUser(email, password);
+                            await loginUser(
+                                emailController.text, passwordController.text);
 
-                            setState(() {
-                              isLoading = false;
-                            });
+                            setState(() => isLoading = false);
                           },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromARGB(255, 0, 81, 255),
@@ -154,10 +156,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           ),
                   ),
                 ),
-
                 const SizedBox(height: 20),
-
-                // Message display
                 if (message.isNotEmpty)
                   Center(
                     child: Text(
