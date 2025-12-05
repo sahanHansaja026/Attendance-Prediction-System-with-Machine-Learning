@@ -1,29 +1,26 @@
+import os
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-# PostgreSQL URL with SSL
-DATABASE_URL = "postgresql://postgres:123@localhost:5432/attendance_management"
+DATABASE_URL = os.getenv("DATABASE_URL")
+if not DATABASE_URL:
+    raise ValueError("No DATABASE_URL found in environment variables")
 
-# Create engine with pool_pre_ping to prevent closed connection errors
 engine = create_engine(
     DATABASE_URL,
-    pool_pre_ping=True,      # <--- important for "SSL connection has been closed unexpectedly"
-    connect_args={},         # optional, can pass SSL args if needed
+    pool_pre_ping=True,
 )
 
-# SessionLocal factory
 SessionLocal = sessionmaker(
     autocommit=False,
     autoflush=False,
     bind=engine,
-    expire_on_commit=False   # avoids lazy-loading issues after commit
+    expire_on_commit=False,
 )
 
-# Base class for models
 Base = declarative_base()
 
-# Dependency for FastAPI routes
 def get_db():
     db = SessionLocal()
     try:
