@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from database import get_db
 import models, schemas
+from typing import List
 from auth import hash_password ,veryfy_password # 🔥 Use your existing hashing
 
 from gustauth import create_access_token, create_refresh_token
@@ -67,3 +68,17 @@ def gust_login(data: schemas.GustLogin, db: Session = Depends(get_db)):
             "index": gust.index
         }
     }
+
+@router.get("/gusts", response_model=List[schemas.GustResponse])
+def get_all_gusts(db: Session = Depends(get_db)):
+    gusts = db.query(models.Gust).all()
+    return [
+        schemas.GustResponse(
+            gust_id=g.gust_id,
+            name=g.name,
+            email=g.email,
+            index=g.index,
+            graduation_year=g.graduation_year
+        ) for g in gusts
+    ]
+    

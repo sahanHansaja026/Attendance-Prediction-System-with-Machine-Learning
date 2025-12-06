@@ -1,10 +1,14 @@
 .createuser {
     background-color: #fff;
+    width: 100%;
 }
-.createuser .buttoncontainer{
+
+.createuser .buttoncontainer {
     padding-left: 5px;
     width: 250px;
+    margin-right: 400px;
 }
+
 .createuser .addbtn {
     background-color: #717171;
     border: 0px;
@@ -13,9 +17,79 @@
     padding: 12px;
     color: #000000;
     font-size: 20px;
-    margin-top: 20px;
     border-radius: 8px;
 }
+
 .addbtn:hover {
     background-color: #989999;
+}
+
+.createuser .displaybtncontainer {
+    width: 100%;
+    height: auto;
+    display: flex;
+    flex-direction: row;
+}
+
+.createuser .user-table {
+    width: 100%;
+    margin-top: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background-color: white;
+    border-radius: 8px;
+    overflow: hidden;
+    border-top: 0.5px solid #000;
+    border-right: 0.5px solid #000;
+}
+.createuser .user-table th{
+    border-bottom: 0.5px solid #000;
+    border-left: 0.5px solid #000;
+    
+}
+.createuser .user-table td{
+    border-left: 0.5px solid #000;
+    border-bottom: 0.5px solid #000;
+}
+.createuser .user-table th,
+.createuser .user-table td {
+    padding: 12px 15px;
+    text-align: center;
+    width: auto;
+    
+}
+
+.createuser .user-table thead {
+    background-color: transparent;
+    color: rgb(0, 0, 0);
+    font-weight: bold;
+    align-items: center;
+    text-align: center;
+    border: 0.5px solid #000;
+
+}
+
+.createuser .user-table tbody tr {
+    border-bottom: 1px solid #ddd;
+}
+
+.createuser .user-table tbody tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.createuser .user-table tbody tr:hover {
+    background-color: #222222;
+    color: white;
+}
+.createuser .search-input {
+    padding: 8px 8px;
+    width: 300px;
+    border-radius: 6px;
+    border: 1px solid #000000;
+    font-size: 14px;
+    height: 35px;
+}
+
+.createuser .search-input:focus {
+    outline: none;
+    box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
 }

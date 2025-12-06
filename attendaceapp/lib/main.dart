@@ -9,7 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await UserSession.loadSession();  
+  await UserSession.loadSession();
 
   runApp(MainApp(isLoggedIn: UserSession.isLoggedIn()));
 }
@@ -137,7 +137,9 @@ class _MyHomePageState extends State<MyHomePage> {
                             });
 
                             await loginUser(
-                                emailController.text, passwordController.text);
+                              emailController.text,
+                              passwordController.text,
+                            );
 
                             setState(() => isLoading = false);
                           },

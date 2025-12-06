@@ -10,6 +10,8 @@ dependencies:
   flutter:
     sdk: flutter
   http: ^1.6.0
+  pin_code_fields: ^8.0.1
+  qr_code_scanner_plus: ^2.0.14
   shared_preferences: ^2.5.3
 
 dev_dependencies:
@@ -21,3 +23,4 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/login.png
+    - assets/images/qricon.png
