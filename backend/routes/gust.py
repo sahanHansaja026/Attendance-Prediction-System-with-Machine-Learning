@@ -4,7 +4,7 @@ from database import get_db
 import models, schemas
 from typing import List
 from auth import hash_password ,veryfy_password # 🔥 Use your existing hashing
-
+from fastapi import Body
 from gustauth import create_access_token, create_refresh_token
 
 router = APIRouter()
@@ -82,3 +82,17 @@ def get_all_gusts(db: Session = Depends(get_db)):
         ) for g in gusts
     ]
     
+@router.post("/gust_logout")
+def gust_logout(token_data: schemas.TokenData = Body(...), db: Session = Depends(get_db)):
+    email = token_data.email.strip()
+    gust = db.query(models.Gust).filter(models.Gust.email == email).first()
+    if not gust:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    gust.refresh_token = None
+    db.commit()
+    return {"message": "Logout successful"}
+
+
+
+

@@ -91,3 +91,9 @@ class GustResponse(BaseModel):
 class GustLogin(BaseModel):
     email: str
     password: str
+
+class TokenData(BaseModel):
+    email: str
+
+class AttendanceVerifyRequest(BaseModel):
+    session_id: int

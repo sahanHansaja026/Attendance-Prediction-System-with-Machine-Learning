@@ -1,6 +1,12 @@
+import 'dart:convert';
+
+import 'package:attendaceapp/config/api.dart';
+import 'package:attendaceapp/main.dart';
+import 'package:attendaceapp/profileedit.dart';
 import 'package:attendaceapp/qrscan.dart';
 import 'package:attendaceapp/session_manager.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class MyDashboard extends StatefulWidget {
   const MyDashboard({super.key});
@@ -11,6 +17,35 @@ class MyDashboard extends StatefulWidget {
 
 class _MyDashboardState extends State<MyDashboard> {
   @override
+  Future<void> logoutUser(BuildContext context) async {
+    try {
+      final token = UserSession.accessToken;
+
+      final response = await http.post(
+        Uri.parse('$API_URL/gust_logout'),
+        headers: {
+          "Authorization": "Bearer $token",
+          "Content-Type": "application/json",
+        },
+        body: jsonEncode({
+          "email": UserSession.email?.trim(), // send email in JSON body
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        UserSession.clear();
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => MyHomePage()),
+        );
+      } else {
+        print("Logout failed: ${response.statusCode} ${response.body}");
+      }
+    } catch (e) {
+      print("Logout Error: $e");
+    }
+  }
+
   String getTodayDate() {
     DateTime now = DateTime.now();
 
@@ -95,7 +130,8 @@ class _MyDashboardState extends State<MyDashboard> {
                                   ),
                                 );
                               },
-                              // icon
+
+                              // icon for qrcode
                               child: Image.asset(
                                 "assets/images/qricon.png",
                                 width: 50,
@@ -103,7 +139,12 @@ class _MyDashboardState extends State<MyDashboard> {
                               ),
                             ),
                           ),
-                          Center(
+
+                          GestureDetector(
+                            onTap: () async {
+                              await logoutUser(context);
+                            },
+                            // icon for logout
                             child: Image.asset(
                               "assets/images/qricon.png",
                               width: 50,
@@ -145,14 +186,24 @@ class _MyDashboardState extends State<MyDashboard> {
                           ),
                         ],
                       ),
-
-                      // profile circle
-                      Container(
-                        width: 70,
-                        height: 70,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(100),
+                      GestureDetector(
+                        onTap: () {
+                          // Navigate to another page
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ProfilePage.ProfileEditPage(),
+                            ), // replace with your page
+                          );
+                        },
+                        // profile circle
+                        child: Container(
+                          width: 70,
+                          height: 70,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(100),
+                          ),
                         ),
                       ),
                     ],

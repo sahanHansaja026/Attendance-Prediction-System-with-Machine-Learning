@@ -1,8 +1,9 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException,Depends
 from sqlalchemy.orm import Session
 from database import get_db, SessionLocal
 import models
 import random
+from schemas import AttendanceVerifyRequest
 from fastapi_utils.tasks import repeat_every
 from datetime import datetime, timedelta
 
@@ -110,3 +111,17 @@ def rotate_pin_task():
     finally:
         db.close()
 
+@router.post("/attendance/verify")
+def verify_attendance(data: AttendanceVerifyRequest, db: Session = Depends(get_db)):
+    # Only check session_id since PIN is the same
+    token_entry = db.query(models.SessionToken).filter(
+        models.SessionToken.pin == data.session_id
+    ).first()
+
+    if not token_entry:
+        raise HTTPException(status_code=400, detail="Invalid session ID")
+
+    return {
+        "message": "Attendance verified successfully",
+        "session_id": data.session_id
+    }
