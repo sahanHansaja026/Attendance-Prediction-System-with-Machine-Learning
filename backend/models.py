@@ -1,7 +1,7 @@
 import email
 from enum import unique
 from database import Base
-from sqlalchemy import Column, Numeric, Integer, String, ForeignKey, DateTime
+from sqlalchemy import Column, Numeric, Integer, String, ForeignKey, DateTime,UniqueConstraint
 from sqlalchemy.orm import relationship
 from datetime import datetime
 import pytz
@@ -28,6 +28,7 @@ class Sesstion(Base):
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(pytz.timezone("Asia/Colombo")))
 
     user = relationship("User", back_populates="sessions")
+    attendances = relationship("Attendance", back_populates="session")
     tokens = relationship("SessionToken", back_populates="session") # optional reverse relationship:
 
 class SessionToken(Base):
@@ -59,3 +60,15 @@ class Gust(Base):
     hashed_password = Column(String, nullable=False)
     graduation_year = Column(Integer, nullable=False)   
     refresh_token = Column(String, nullable=True)
+
+class Attendance(Base):
+    __tablename__ = "attendance"
+    
+    attendance_id = Column(Integer, primary_key=True, index=True)
+    session_id = Column(Integer, ForeignKey("sesstion.sessionid"), nullable=False)
+    student_id = Column(String, nullable=False)
+    latitude = Column(String, nullable=False)     # 👍 ADD THIS
+    longitude = Column(String, nullable=False)    # 👍 ADD THIS
+    mark_at = Column(DateTime(timezone=True), default=lambda: datetime.now(pytz.timezone("Asia/Colombo")))
+
+    session = relationship("Sesstion", back_populates="attendances")

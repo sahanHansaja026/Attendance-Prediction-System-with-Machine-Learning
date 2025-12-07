@@ -49,3 +49,21 @@ def delete_session(session_id: int, db: Session = Depends(get_db)):
     
     return {"message": "Session deleted successfully", "deleted_session_id": session_id}
 
+
+# get session by session_id
+@router.get("/get_session/{session_id}")
+def get_session(session_id: int, db: Session = Depends(get_db)):
+    session = db.query(models.Sesstion).filter(models.Sesstion.sessionid == session_id).first()
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+
+    return {
+        "sessionid": session.sessionid,
+        "userid": session.userid,
+        "module_name": session.module_name,
+        "location_name": session.location_name,
+        "start_time": session.start_time,
+        "end_time": session.end_time,
+        "created_at": session.created_at
+    }
+

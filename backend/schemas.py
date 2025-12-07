@@ -96,4 +96,13 @@ class TokenData(BaseModel):
     email: str
 
 class AttendanceVerifyRequest(BaseModel):
+    pin: int
+
+class AttendanceCreate(BaseModel):
     session_id: int
+    student_id: str
+    latitude: str
+    longitude: str
+
+    class Config:
+        from_attributes = True

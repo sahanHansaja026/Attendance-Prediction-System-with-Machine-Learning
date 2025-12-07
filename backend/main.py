@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware # type: ignore
 from database import engine
 import models
 
-from routes import user,sesstion,token,course,gust
+from routes import user,sesstion,token,course,gust,attendance
 
 logging.basicConfig(level=logging.INFO,format='%(asctime)s - %(levelname)s - %(message)s')
 origins = ["*"]  # allow all origins
@@ -33,4 +33,5 @@ app.include_router(sesstion.router)
 app.include_router(token.router)
 app.include_router(course.router)
 app.include_router(gust.router)
+app.include_router(attendance.router)
 

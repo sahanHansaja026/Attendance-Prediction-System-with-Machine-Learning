@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:attendaceapp/comform.dart';
 import 'package:attendaceapp/config/api.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -18,7 +19,7 @@ class _MyQrPageState extends State<MyQrPage> {
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   QRViewController? controller;
   String qrText = '';
-  String sessionPin = ''; // The 4-digit PIN acts as session ID
+  String sessionPin = ''; // Only PIN is used
 
   @override
   void reassemble() {
@@ -27,46 +28,50 @@ class _MyQrPageState extends State<MyQrPage> {
     controller?.resumeCamera();
   }
 
-  // Send session PIN as session_id to backend
-  Future<void> _verifyAttendance(int sessionId) async {
-    final url = Uri.parse('$API_URL/attendance/verify');
-    print("Sending POST request with sessionId=$sessionId");
+  // Send ONLY the PIN to backend
+  Future<void> _verifyAttendance(String pin) async {
+  final url = Uri.parse('$API_URL/attendance/verify');
+  print("Sending POST request with PIN=$pin");
 
-    try {
-      final response = await http.post(
-        url,
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode({"session_id": sessionId}),
+  try {
+    final response = await http.post(
+      url,
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({"pin": pin}), // Send only PIN
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+
+      // Navigate to ConfirmAttendancePage
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ConfirmAttendancePage(
+            sessionId: data['session_id'].toString(),
+            tokenId: data['token_id'].toString(),
+          ),
+        ),
       );
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        print("Verified: ${data['message']}");
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Attendance verified!")),
-        );
-      } else {
-        final data = jsonDecode(response.body);
-        print("Error: ${data['detail']}");
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(data['detail'])),
-        );
-      }
-    } catch (e) {
-      print("Exception: $e");
+    } else {
+      final data = jsonDecode(response.body);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Network error")),
+        SnackBar(content: Text(data['detail'])),
       );
     }
+  } catch (e) {
+    print("Exception: $e");
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Network error")),
+    );
   }
+}
 
+  // When QR is scanned
   void _handleQrScan(String qr) {
-    final scannedPin = int.tryParse(qr);
-    if (scannedPin != null) {
-      setState(() {
-        sessionPin = qr;
-      });
-      _verifyAttendance(scannedPin);
+    if (qr.length == 4 && int.tryParse(qr) != null) {
+      setState(() => sessionPin = qr);
+      _verifyAttendance(qr);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Invalid QR code")),
@@ -77,6 +82,7 @@ class _MyQrPageState extends State<MyQrPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+       resizeToAvoidBottomInset: true,
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 0, 81, 255),
         elevation: 0,
@@ -94,18 +100,16 @@ class _MyQrPageState extends State<MyQrPage> {
             ),
           ),
         ),
-        title: const SizedBox(),
-        centerTitle: true,
       ),
+
       body: Container(
         color: const Color.fromARGB(255, 0, 81, 255),
         width: double.infinity,
-        height: MediaQuery.of(context).size.height,
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // QR Scanner frame
+            // QR Scanner
             SizedBox(
               width: 300,
               height: 300,
@@ -124,16 +128,14 @@ class _MyQrPageState extends State<MyQrPage> {
 
             const SizedBox(height: 30),
 
-            // 4-digit PIN input (manual session ID)
+            // PIN Input
             PinCodeTextField(
               appContext: context,
               length: 4,
-              onChanged: (value) {
-                sessionPin = value;
-              },
+              onChanged: (value) => sessionPin = value,
               onCompleted: (value) {
                 sessionPin = value;
-                print("Entered session PIN: $sessionPin");
+                print("Entered PIN: $sessionPin");
               },
               keyboardType: TextInputType.number,
               textStyle: const TextStyle(color: Colors.white, fontSize: 20),
@@ -155,28 +157,29 @@ class _MyQrPageState extends State<MyQrPage> {
 
             const SizedBox(height: 20),
 
-            // Enter button
             ElevatedButton(
               onPressed: () {
-                final sessionId = int.tryParse(sessionPin);
-                if (sessionId == null || sessionPin.length != 4) {
+                if (sessionPin.length != 4 || int.tryParse(sessionPin) == null) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text("Enter a valid 4-digit PIN")),
                   );
                   return;
                 }
-                _verifyAttendance(sessionId);
+                _verifyAttendance(sessionPin);
               },
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                backgroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30),
                 ),
-                backgroundColor: Colors.white,
               ),
               child: const Text(
                 "Enter",
-                style: TextStyle(color: Color.fromARGB(255, 0, 81, 255), fontSize: 16),
+                style: TextStyle(
+                  color: Color.fromARGB(255, 0, 81, 255),
+                  fontSize: 16,
+                ),
               ),
             ),
           ],
@@ -189,8 +192,7 @@ class _MyQrPageState extends State<MyQrPage> {
     this.controller = controller;
     controller.scannedDataStream.listen((scanData) {
       if (scanData.code != null && scanData.code!.isNotEmpty) {
-        qrText = scanData.code!;
-        _handleQrScan(qrText); // auto verify on scan
+        _handleQrScan(scanData.code!);
       }
     });
   }
