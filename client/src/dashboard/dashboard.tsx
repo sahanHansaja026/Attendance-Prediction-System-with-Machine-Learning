@@ -12,6 +12,8 @@ import AddUsersIcon from "../assets/images/icon4.svg";
 import HomePage from "./compnents/create";
 import ShowUsers from "./compnents/showuser";
 import AddUsers from "./compnents/adduser";
+import SessionQR from "./compnents/qrcode";
+import ShowAttendancePage from "./compnents/showattendance";
 
 type User = {
     username: string;
@@ -30,6 +32,9 @@ export default function Dashboard() {
         history: "History",
         showuser: "View Users",
         adduser: "Add New User",
+        sessionqr: "Mark Attendance",
+        attendaceshow:"Marked Attendance"
+    
     };
 
     const navigate = useNavigate();
@@ -118,7 +123,7 @@ export default function Dashboard() {
                 </div>
 
                 <div className="pagecontainer">
-                    {activePage === "home" && <HomePage />}
+                    {activePage === "home" && (<HomePage setActivePage={setActivePage} />)}
                     {activePage === "analysis" && <div>Analysis Page Content</div>}
                     {activePage === "history" && <div>History Page Content</div>}
 
@@ -129,6 +134,9 @@ export default function Dashboard() {
 
                     {/* Add User Form Page */}
                     {activePage === "adduser" && <AddUsers />}
+                    {activePage === "attendaceshow" && <ShowAttendancePage/>}
+
+                    {activePage==="sessionqr" && <SessionQR setActivePage={setActivePage}/>}
                 </div>
             </div>
         </div>

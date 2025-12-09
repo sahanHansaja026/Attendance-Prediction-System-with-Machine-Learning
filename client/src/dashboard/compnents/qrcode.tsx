@@ -5,7 +5,11 @@ import API_BASE_URL from "../../../config/ipconfig";
 import "../../css/token.css";
 import { useParams, useNavigate } from "react-router-dom";
 
-export default function SessionQR() {
+interface ShowUsersProps {
+    setActivePage: (page: string) => void;
+}
+
+function SessionQR({ setActivePage }: ShowUsersProps) {
     const { sessionId } = useParams();
     const [pin, setPin] = useState("");
     const [token, setToken] = useState("");
@@ -39,6 +43,11 @@ export default function SessionQR() {
         }
     };
 
+    const handleNext = () => {
+        // Navigate to showattendance with sessionId as query or param
+        navigate(`/showattendance/${sessionId}`);
+    };
+
     // ⭐ Dynamic QR Code URL
     const qrValue =
         pin && token
@@ -65,9 +74,20 @@ export default function SessionQR() {
                 </div>
 
                 <div className="nextbtn">
-                    <button className="next">Next</button>
+                    <button
+                        className="next"
+                        onClick={() => {
+                            handleNext();
+                            setActivePage("attendaceshow");
+                        }}
+                    >
+                        Next
+                    </button>
+
                 </div>
             </div>
         </div>
     );
 }
+
+export default SessionQR;

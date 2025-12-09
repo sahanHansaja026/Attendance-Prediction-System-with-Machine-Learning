@@ -1,1 +1,1 @@
-const String API_URL = "https://attendance-prediction-system-with.onrender.com";
+const String API_URL = "http://192.168.1.6:8000";

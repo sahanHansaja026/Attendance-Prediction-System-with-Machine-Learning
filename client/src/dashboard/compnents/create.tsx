@@ -9,8 +9,10 @@ type User = {
     email: string;
     id: number;
 };
-
-function Create_Sesstion() {
+interface ShowUsersProps {
+    setActivePage: (page: string) => void;
+}
+function Create_Sesstion({ setActivePage }: ShowUsersProps) {
     const [user, setUser] = useState<User | null>(null);
     const [error, setError] = useState<string>("");
 
@@ -280,7 +282,13 @@ function Create_Sesstion() {
                     </div>
                 </div>
 
-                <button className="signin" onClick={handleSubmit}>
+                <button
+                    className="signin"
+                    onClick={() => {
+                        handleSubmit();
+                        setActivePage("sessionqr");
+                    }}
+                >
                     Next
                 </button>
             </div>

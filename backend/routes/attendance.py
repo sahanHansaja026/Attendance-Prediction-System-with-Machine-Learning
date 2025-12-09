@@ -43,3 +43,26 @@ def mark_attendance(request: AttendanceCreate, db: Session = Depends(get_db)):
         "attendance_id": new_attendance.attendance_id,
         "mark_at": new_attendance.mark_at.isoformat()
     }
+
+# GET attendances by session_id
+@router.get("/attendances/{session_id}")
+def get_attendances(session_id: str, db: Session = Depends(get_db)):
+    # Check if session exists
+    session = db.query(models.Sesstion).filter(models.Sesstion.sessionid == session_id).first()
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+
+    # Get all attendances for this session
+    attendances = db.query(models.Attendance).filter(models.Attendance.session_id == session_id).all()
+
+    # Return formatted response
+    return [
+        {
+            "attendance_id": att.attendance_id,
+            "student_id": att.student_id,
+            "latitude": att.latitude,
+            "longitude": att.longitude,
+            "mark_at": att.mark_at.isoformat()
+        } 
+        for att in attendances
+    ]
