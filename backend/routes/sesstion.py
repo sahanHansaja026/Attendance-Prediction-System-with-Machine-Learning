@@ -13,7 +13,7 @@ local_tz = pytz.timezone("Asia/Colombo")
 def create_session(session: schemas.SesstionCreate, db: Session = Depends(get_db)):
     new_session = models.Sesstion(
         userid=session.userid,
-        module_name=session.module_name,
+        module_id=session.module_id,
         location_name=session.location_name,
         start_time=session.start_time,
         end_time=session.end_time,
@@ -27,7 +27,7 @@ def create_session(session: schemas.SesstionCreate, db: Session = Depends(get_db
     print("Created Session:", {
         "sessionid": new_session.sessionid,
         "userid": new_session.userid,
-        "module_name": new_session.module_name,
+        "module_id": new_session.module_id,
         "location_name": new_session.location_name,
         "start_time": new_session.start_time,
         "end_time": new_session.end_time,
@@ -60,7 +60,7 @@ def get_session(session_id: int, db: Session = Depends(get_db)):
     return {
         "sessionid": session.sessionid,
         "userid": session.userid,
-        "module_name": session.module_name,
+        "module_id": session.module_id,
         "location_name": session.location_name,
         "start_time": session.start_time,
         "end_time": session.end_time,

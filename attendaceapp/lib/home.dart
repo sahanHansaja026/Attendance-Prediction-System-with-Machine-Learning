@@ -2,9 +2,11 @@ import 'dart:convert';
 
 import 'package:attendaceapp/config/api.dart';
 import 'package:attendaceapp/main.dart';
-import 'package:attendaceapp/profileedit.dart';
+import 'package:attendaceapp/profileshow.dart';
 import 'package:attendaceapp/qrscan.dart';
+import 'package:attendaceapp/services/gust_auth_service.dart';
 import 'package:attendaceapp/session_manager.dart';
+import 'package:attendaceapp/study.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -120,7 +122,8 @@ class _MyDashboardState extends State<MyDashboard> {
                       child: Row(
                         children: [
                           Padding(
-                            padding: EdgeInsets.only(left: 15, right: 20),
+                            padding: EdgeInsets.only(left: 15, right: 10),
+
                             child: GestureDetector(
                               onTap: () {
                                 Navigator.push(
@@ -139,16 +142,49 @@ class _MyDashboardState extends State<MyDashboard> {
                               ),
                             ),
                           ),
+                          Padding(
+                            padding: EdgeInsets.only(left: 15, right: 10),
+                            child: GestureDetector(
+                              onTap: () async {
+                                await logoutUser(context);
+                              },
+                              // icon for logout
+                              child: Image.asset(
+                                "assets/images/analysis.png",
+                                width: 50,
+                                height: 50,
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(left: 15, right: 10),
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => StudentGrade(),
+                                  ),
+                                );
+                              },
 
-                          GestureDetector(
-                            onTap: () async {
-                              await logoutUser(context);
-                            },
-                            // icon for logout
-                            child: Image.asset(
-                              "assets/images/qricon.png",
-                              width: 50,
-                              height: 50,
+                              // icon for grade
+                              child: Image.asset(
+                                "assets/images/study.png",
+                                width: 50,
+                                height: 50,
+                              ),
+                            ),
+                          ),
+
+                          Padding(
+                            padding: EdgeInsets.only(left: 15, right: 10),
+                            child: GestureDetector(
+                              child: Image.asset(
+                                "assets/images/time.png",
+                                width: 50,
+                                height: 50,
+                              ),
                             ),
                           ),
                         ],
@@ -192,7 +228,8 @@ class _MyDashboardState extends State<MyDashboard> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => ProfilePage.ProfileEditPage(),
+                              builder: (context) =>
+                                  ProfilePage.ProfileEditPage(),
                             ), // replace with your page
                           );
                         },

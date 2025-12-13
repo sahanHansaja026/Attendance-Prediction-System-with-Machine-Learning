@@ -7,13 +7,16 @@ import HistoryIcon from "../assets/images/icon3.svg";
 import LOgoutIcon from "../assets/images/icon2.svg";
 import { useNavigate } from "react-router-dom";
 import AddUsersIcon from "../assets/images/icon4.svg";
+import AddDetails from "../assets/images/icon6.svg";
 
 // components
 import HomePage from "./compnents/create";
 import ShowUsers from "./compnents/showuser";
 import AddUsers from "./compnents/adduser";
 import SessionQR from "./compnents/qrcode";
+import ButtonsPage from "./compnents/button";
 import ShowAttendancePage from "./compnents/showattendance";
+import AddCourseDetails from "./compnents/addcourses";
 
 type User = {
     username: string;
@@ -33,7 +36,9 @@ export default function Dashboard() {
         showuser: "View Users",
         adduser: "Add New User",
         sessionqr: "Mark Attendance",
-        attendaceshow:"Marked Attendance"
+        attendaceshow: "Marked Attendance",
+        adddetail: "Add Infromations",
+        addcourses:"Add Modules"
     
     };
 
@@ -117,6 +122,13 @@ export default function Dashboard() {
                         <img src={AddUsersIcon} alt="add users" className="iconadd" />
                     </div>
 
+                    <div
+                        className={`sidebar-item ${activePage === "showuser" ? "active" : ""}`}
+                        onClick={() => setActivePage("adddetail")}
+                    >
+                        <img src={AddDetails} alt="add informations" className="iconadd" />
+                    </div>
+
                     <div className="sidebar-item" onClick={handleLogout}>
                         <img src={LOgoutIcon} alt="Logout" className="icon" />
                     </div>
@@ -126,7 +138,7 @@ export default function Dashboard() {
                     {activePage === "home" && (<HomePage setActivePage={setActivePage} />)}
                     {activePage === "analysis" && <div>Analysis Page Content</div>}
                     {activePage === "history" && <div>History Page Content</div>}
-
+                    {activePage === "adddetail" && (<ButtonsPage setActivePage1={setActivePage} />)}
                     {/* Show Users Page — pass setActivePage so button can open adduser */}
                     {activePage === "showuser" && (
                         <ShowUsers setActivePage={setActivePage} />
@@ -134,6 +146,7 @@ export default function Dashboard() {
 
                     {/* Add User Form Page */}
                     {activePage === "adduser" && <AddUsers />}
+                    {activePage === "addcourses" && <AddCourseDetails/>}
                     {activePage === "attendaceshow" && <ShowAttendancePage/>}
 
                     {activePage==="sessionqr" && <SessionQR setActivePage={setActivePage}/>}

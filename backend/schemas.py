@@ -37,7 +37,7 @@ class UserOut(BaseModel):
 # Input schema
 class SesstionCreate(BaseModel):
     userid: int
-    module_name: str
+    module_id: int
     location_name: str
     start_time: str
     end_time: str
@@ -46,7 +46,7 @@ class SesstionCreate(BaseModel):
 class SesstionResponse(BaseModel):
     sessionid: int
     userid: int
-    module_name: str
+    module_id: int
     location_name: str
     start_time: str
     end_time: str
