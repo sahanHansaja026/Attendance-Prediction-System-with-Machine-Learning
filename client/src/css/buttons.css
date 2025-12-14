@@ -1,3 +1,22 @@
 .button{
     background-color: white;
 }
+.button .buttoncontainer {
+    padding-left: 5px;
+    width: 650px;
+    margin-right: 400px;
+    display: flex;
+    flex-direction: row;
+    gap: 25px;
+}
+
+.button .addbtn {
+    background-color: #717171;
+    border: 0px;
+    border-color: none;
+    width: 100%;
+    padding: 12px;
+    color: #000000;
+    font-size: 20px;
+    border-radius: 8px;
+}

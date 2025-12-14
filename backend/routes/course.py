@@ -19,3 +19,20 @@ def get_course(course_id: int, db: Session = Depends(get_db)):
     if not course:
         raise HTTPException(status_code=404, detail="Course not found")
     return course
+
+@router.post("/courses", response_model=schemas.CourseResponse, status_code=201)
+def create_course(course: schemas.CourseCreate, db: Session = Depends(get_db)):
+    new_course = models.Course(
+        course_name=course.course_name,
+        credits=course.credits,
+        courseindex=course.courseindex,
+        owner=course.owner,
+        category=course.category,
+        related_skills=course.related_skills
+    )
+
+    db.add(new_course)
+    db.commit()
+    db.refresh(new_course)
+
+    return new_course

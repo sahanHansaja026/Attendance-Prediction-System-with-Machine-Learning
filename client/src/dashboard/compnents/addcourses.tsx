@@ -1,5 +1,7 @@
 import React, { useState } from "react";
+import axios from "axios";
 import "../../css/courses.css";
+import API_BASE_URL from "../../../config/ipconfig";
 
 function AddCourseDetails() {
     const [courseName, setCourseName] = useState("");
@@ -9,26 +11,41 @@ function AddCourseDetails() {
     const [category, setCategory] = useState("");
     const [relatedSkills, setRelatedSkills] = useState("");
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const [loading, setLoading] = useState(false);
+
+
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Here you can call your API to save course data
-        console.log({
-            courseName,
-            courseIndex,
-            owner,
-            credits,
-            category,
-            relatedSkills,
-        });
-        alert("Course Added Successfully!");
-        // Reset form
-        setCourseName("");
-        setCourseIndex("");
-        setOwner("");
-        setCredits("");
-        setCategory("");
-        setRelatedSkills("");
+        setLoading(true);
+
+        try {
+            await axios.post(`${API_BASE_URL}/courses`, {
+                course_name: courseName,
+                courseindex: courseIndex,
+                owner: owner,
+                credits: Number(credits),
+                category: category,
+                related_skills: relatedSkills
+            });
+
+            alert("Course Added Successfully!");
+
+            // Reset form
+            setCourseName("");
+            setCourseIndex("");
+            setOwner("");
+            setCredits("");
+            setCategory("");
+            setRelatedSkills("");
+
+        } catch (error) {
+            console.error(error);
+            alert("Failed to add course");
+        } finally {
+            setLoading(false);
+        }
     };
+
 
     return (
         <div className="coursepage">
@@ -40,6 +57,7 @@ function AddCourseDetails() {
                         placeholder="CAT2 XXXX"
                         value={courseIndex}
                         onChange={(e) => setCourseIndex(e.target.value)}
+                        required
                     />
                 </div>
 
@@ -50,6 +68,7 @@ function AddCourseDetails() {
                         placeholder="Module Name"
                         value={courseName}
                         onChange={(e) => setCourseName(e.target.value)}
+                        required
                     />
                 </div>
 
@@ -60,6 +79,7 @@ function AddCourseDetails() {
                         placeholder="Dr./Mr./Ms. ..."
                         value={owner}
                         onChange={(e) => setOwner(e.target.value)}
+                        required
                     />
                 </div>
 
@@ -70,6 +90,7 @@ function AddCourseDetails() {
                         placeholder="3"
                         value={credits}
                         onChange={(e) => setCredits(e.target.value)}
+                        required
                     />
                 </div>
 
@@ -78,6 +99,7 @@ function AddCourseDetails() {
                     <select
                         value={category}
                         onChange={(e) => setCategory(e.target.value)}
+                        required
                     >
                         <option value="">Select Category</option>
                         <option value="Programming">Programming</option>
@@ -97,9 +119,14 @@ function AddCourseDetails() {
                     />
                 </div>
 
-                <button type="submit" className="submit-btn">
-                    Add Module
+                <button
+                    type="submit"
+                    className="submit-btn"
+                    disabled={loading}
+                >
+                    {loading ? "Adding..." : "Add Module"}
                 </button>
+
             </form>
         </div>
     );

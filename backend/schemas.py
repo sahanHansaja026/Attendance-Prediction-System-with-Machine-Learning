@@ -65,7 +65,7 @@ class CourseResponse(BaseModel):
     course_id: int
     course_name: str
     courseindex: str
-    owner: int
+    owner: str
 
     class Config:
         orm_mode = True
@@ -106,3 +106,15 @@ class AttendanceCreate(BaseModel):
 
     class Config:
         from_attributes = True
+
+class CourseBase(BaseModel):
+    course_name: str
+    credits: int
+    courseindex: str
+    owner: str
+    category: Optional[str] = None
+    related_skills: Optional[str] = None
+
+
+class CourseCreate(CourseBase):
+    pass

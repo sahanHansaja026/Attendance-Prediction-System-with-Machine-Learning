@@ -50,9 +50,9 @@ class Course(Base):
     
     course_id = Column(Integer, primary_key=True, index=True)
     course_name = Column(String, nullable=False)
-    crededets = Column(Integer, nullable=False)           
-    courseindex = Column(String, nullable=False)
-    owner = Column(Integer, nullable=False)
+    credits = Column(Integer, nullable=False)           
+    courseindex = Column(String, nullable=False,unique=True)
+    owner = Column(String, nullable=False)
     category = Column(String, nullable=True)
     related_skills = Column(String, nullable=True)
 

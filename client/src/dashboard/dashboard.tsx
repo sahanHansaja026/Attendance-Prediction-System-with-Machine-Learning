@@ -17,6 +17,7 @@ import SessionQR from "./compnents/qrcode";
 import ButtonsPage from "./compnents/button";
 import ShowAttendancePage from "./compnents/showattendance";
 import AddCourseDetails from "./compnents/addcourses";
+import AddResultsPage from "./compnents/addresults";
 
 type User = {
     username: string;
@@ -38,7 +39,8 @@ export default function Dashboard() {
         sessionqr: "Mark Attendance",
         attendaceshow: "Marked Attendance",
         adddetail: "Add Infromations",
-        addcourses:"Add Modules"
+        addcourses: "Add Modules",
+        addresults:"Add Student Results"
     
     };
 
@@ -146,6 +148,7 @@ export default function Dashboard() {
 
                     {/* Add User Form Page */}
                     {activePage === "adduser" && <AddUsers />}
+                    {activePage === "addresults" && <AddResultsPage/>}
                     {activePage === "addcourses" && <AddCourseDetails/>}
                     {activePage === "attendaceshow" && <ShowAttendancePage/>}
 
