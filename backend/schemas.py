@@ -118,3 +118,18 @@ class CourseBase(BaseModel):
 
 class CourseCreate(CourseBase):
     pass
+
+class StudentProfileBase(BaseModel):
+    degree_program: Optional[str] = None
+    current_year: Optional[int] = None
+    skills: Optional[str] = None  # Could store as comma-separated string
+    career_goal: Optional[str] = None
+
+class StudentProfileUpdate(StudentProfileBase):
+    pass  # Used for updating profile, all fields optional
+
+class StudentProfileOut(StudentProfileBase):
+    user_id: int
+
+    class Config:
+        orm_mode = True

@@ -13,6 +13,7 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 0, 81, 255),
         elevation: 0,
@@ -105,9 +106,10 @@ class _ProfilePageState extends State<ProfilePage> {
                   0: FlexColumnWidth(1), // Label column
                   1: FlexColumnWidth(2), // Value column
                 },
-                border: TableBorder.all(color: Colors.grey.shade300),
+                border: TableBorder.all(color: const Color.fromARGB(255, 255, 255, 255)),
                 children: [
                   TableRow(
+                    
                     children: [
                       Padding(
                         padding: const EdgeInsets.all(8.0),
@@ -118,7 +120,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Text("BSc (Hons) in Software Engineering"),
+                        child: Text("BSc (Hons) in Software Engineering djkkj kdjiorj kdnkjf klssfkjds kf f"),
                       ),
                     ],
                   ),

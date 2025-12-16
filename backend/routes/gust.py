@@ -65,7 +65,8 @@ def gust_login(data: schemas.GustLogin, db: Session = Depends(get_db)):
         "user": {
             "name": gust.name,
             "email": gust.email,
-            "index": gust.index
+            "index": gust.index,
+            "graduation_year":gust.graduation_year,
         }
     }
 
