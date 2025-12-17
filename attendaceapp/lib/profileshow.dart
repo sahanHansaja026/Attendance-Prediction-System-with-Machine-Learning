@@ -1,210 +1,286 @@
+import 'dart:convert';
+import 'package:attendaceapp/config/api.dart';
 import 'package:attendaceapp/profileedit.dart';
 import 'package:attendaceapp/session_manager.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
+/// ================= MODEL =================
+class StudentProfile {
+  final String userId;
+  final String degreeProgram;
+  final String full_name;
+  final String currentYear;
+  final String email;
+  final String skills;
+  final String career_goal;
+  final String? profileImage; // base64 string
+
+  StudentProfile({
+    required this.userId,
+    required this.full_name,
+    required this.degreeProgram,
+    required this.currentYear,
+    required this.skills,
+    required this.career_goal,
+    this.profileImage,
+    required this.email,
+  });
+
+  factory StudentProfile.fromJson(Map<String, dynamic> json) {
+    return StudentProfile(
+      userId: json['user_id'] ?? '',
+      degreeProgram: json['degree_program'] ?? '',
+      currentYear: json['current_year']?.toString() ?? '',
+      skills: json['skills'] ?? '',
+      profileImage: json['profileimage'],
+      career_goal: json['career_goal'],
+      full_name: json['full_name'],
+      email: '',
+    );
+  }
+}
+
+/// ================= SERVICE =================
+class ProfileService {
+  static Future<StudentProfile> getProfile(String userId) async {
+    final url = Uri.parse("$API_URL/profilewith/$userId");
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      return StudentProfile.fromJson(jsonDecode(response.body));
+    } else {
+      throw Exception("Failed to load profile");
+    }
+  }
+}
+
+/// ================= PAGE =================
 class ProfilePage extends StatefulWidget {
-  const ProfilePage.ProfileEditPage({super.key});
+  const ProfilePage({super.key});
 
   @override
   State<ProfilePage> createState() => _ProfilePageState();
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  StudentProfile? profile;
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    loadProfile();
+  }
+
+  Future<void> loadProfile() async {
+    if (UserSession.index == null) {
+      debugPrint("UserSession.index is null");
+      setState(() => isLoading = false);
+      return;
+    }
+
+    try {
+      final result = await ProfileService.getProfile(UserSession.index!);
+      setState(() {
+        profile = result;
+        isLoading = false;
+      });
+    } catch (e) {
+      debugPrint(e.toString());
+      setState(() => isLoading = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+
+      /// ================= APP BAR =================
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 0, 81, 255),
         elevation: 0,
-        leading: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: InkWell(
-            borderRadius: BorderRadius.circular(30),
-            onTap: () => Navigator.pop(context),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(Icons.arrow_back, color: Colors.white),
-            ),
-          ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
         ),
-        title: const SizedBox(),
-        centerTitle: true,
       ),
+
+      /// ================= BODY =================
       body: SingleChildScrollView(
-        padding: EdgeInsets.only(top: 25),
+        padding: const EdgeInsets.only(top: 25),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Center(
-              child: Container(
-                width: 350,
-                height: 120,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      const Color.fromARGB(255, 0, 81, 255),
-                      const Color.fromARGB(255, 33, 114, 180),
-                      const Color.fromARGB(255, 84, 162, 218),
-                    ],
-                    stops: [
-                      0.2, // 20% red
-                      0.5, // 50% blue
-                      1.0, // 100% green
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                padding: EdgeInsets.only(top: 25, left: 15, right: 70),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            /// ================= PROFILE SECTION =================
+            isLoading
+                ? _loadingProfile()
+                : profile == null
+                ? _profileNotFound()
+                : _profileCard(),
+
+            /// ================= DETAILS TABLE =================
+            if (!isLoading && profile != null)
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: Table(
+                  columnWidths: const {
+                    0: FlexColumnWidth(1),
+                    1: FlexColumnWidth(2),
+                  },
                   children: [
-                    Container(
-                      width: 70,
-                      height: 70,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(100),
-                      ),
+                    _tableRow(
+                      "Name",
+                      profile!.full_name.isEmpty
+                          ? "Not provided"
+                          : profile!.full_name,
                     ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "${UserSession.index}",
-                          style: TextStyle(
-                            fontSize: 25,
-                            fontWeight: FontWeight.bold,
-                            color: const Color.fromARGB(255, 255, 255, 255),
-                          ),
-                        ),
-                        SizedBox(height: 0),
-                        Text(
-                          "${UserSession.email}",
-                          style: TextStyle(
-                            fontSize: 15,
-                            color: const Color.fromARGB(255, 255, 255, 255),
-                          ),
-                          textAlign: TextAlign.start,
-                        ),
-                      ],
+                    _tableRow(
+                      "Degree",
+                      profile!.degreeProgram.isEmpty
+                          ? "Not provided"
+                          : profile!.degreeProgram,
                     ),
+                    _tableRow(
+                      "Year",
+                      profile!.currentYear.isEmpty
+                          ? "Not provided"
+                          : profile!.currentYear,
+                    ),
+                    _tableRow(
+                      "skills",
+                      profile!.skills.isEmpty
+                          ? "Not provided"
+                          : profile!.skills,
+                    ),
+                    _tableRow(
+                      "career_goal",
+                      profile!.career_goal.isEmpty
+                          ? "Not provided"
+                          : profile!.career_goal,
+                    ),
+                    _tableRow("ID", profile!.userId),
                   ],
                 ),
               ),
-            ),
+
+            /// ================= EDIT BUTTON =================
             Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Table(
-                columnWidths: {
-                  0: FlexColumnWidth(1), // Label column
-                  1: FlexColumnWidth(2), // Value column
-                },
-                border: TableBorder.all(color: const Color.fromARGB(255, 255, 255, 255)),
-                children: [
-                  TableRow(
-                    
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          "Degree",
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text("BSc (Hons) in Software Engineering djkkj kdjiorj kdnkjf klssfkjds kf f"),
-                      ),
-                    ],
-                  ),
-                  TableRow(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          "Year",
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text("2025"),
-                      ),
-                    ],
-                  ),
-                  TableRow(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          "Email",
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text("22ug2-0035@sltc.ac.lk"),
-                      ),
-                    ],
-                  ),
-                  TableRow(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          "ID",
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text("22ug2-0035"),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            Column(
-              children: [
-                Padding(
-                  padding: EdgeInsets.only(top: 250, left: 20, right: 20),
-                  child: Center(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => MyProfileEdit(),
-                          ),
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color.fromARGB(255, 0, 81, 255),
-                        minimumSize: const Size(400, 50),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                      ),
-                      child: Text(
-                        "Edit Your Profile",
-                        style: TextStyle(color: Colors.white, fontSize: 20),
-                      ),
-                    ),
+              padding: const EdgeInsets.all(20),
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  minimumSize: const Size(double.infinity, 50),
+                  backgroundColor: const Color.fromARGB(255, 0, 81, 255),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
                   ),
                 ),
-              ],
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const MyProfileEdit()),
+                  );
+                },
+                child: const Text(
+                  "Edit Your Profile",
+                  style: TextStyle(fontSize: 18, color: Colors.white),
+                ),
+              ),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  /// ================= LOADING UI =================
+  Widget _loadingProfile() {
+    return Column(
+      children: const [
+        SizedBox(height: 100),
+        Image(image: AssetImage("assets/images/loading.png"), height: 250),
+        SizedBox(height: 15),
+        CircularProgressIndicator(),
+      ],
+    );
+  }
+
+  /// ================= PROFILE CARD =================
+  Widget _profileCard() {
+    return Container(
+      width: 350,
+      height: 120,
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [
+            Color.fromARGB(255, 0, 81, 255),
+            Color.fromARGB(255, 33, 114, 180),
+            Color.fromARGB(255, 84, 162, 218),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      padding: const EdgeInsets.all(20),
+      child: Row(
+        children: [
+          /// ================= PROFILE IMAGE =================
+          CircleAvatar(
+            radius: 30,
+            backgroundColor: Colors.grey[300],
+            backgroundImage: profile!.profileImage != null
+                ? MemoryImage(base64Decode(profile!.profileImage!))
+                : null,
+            child: profile!.profileImage == null
+                ? const Icon(Icons.person, size: 30, color: Colors.white)
+                : null,
+          ),
+          const SizedBox(width: 15),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: EdgeInsets.only(top: 10, bottom: 8),
+                child: Text(
+                  profile!.userId,
+                  style: const TextStyle(
+                    fontSize: 22,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              Text(
+                "${UserSession.email}",
+                style: const TextStyle(color: Colors.white),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// ================= PROFILE NOT FOUND =================
+  Widget _profileNotFound() {
+    return const Padding(
+      padding: EdgeInsets.all(20),
+      child: Text("Profile not found", style: TextStyle(fontSize: 16)),
+    );
+  }
+
+  /// ================= TABLE ROW =================
+  TableRow _tableRow(String label, String value) {
+    return TableRow(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(8),
+          child: Text(
+            label,
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+        ),
+        Padding(padding: const EdgeInsets.all(8), child: Text(value)),
+      ],
     );
   }
 }

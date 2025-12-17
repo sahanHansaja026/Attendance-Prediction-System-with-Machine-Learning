@@ -124,12 +124,14 @@ class StudentProfileBase(BaseModel):
     current_year: Optional[int] = None
     skills: Optional[str] = None  # Could store as comma-separated string
     career_goal: Optional[str] = None
+    full_name:Optional[str]= None
 
 class StudentProfileUpdate(StudentProfileBase):
     pass  # Used for updating profile, all fields optional
 
 class StudentProfileOut(StudentProfileBase):
-    user_id: int
+    user_id: str
+    profileimage: Optional[str] = None 
 
     class Config:
         orm_mode = True

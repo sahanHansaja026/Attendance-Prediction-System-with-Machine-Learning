@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:attendaceapp/config/api.dart';
 import 'package:attendaceapp/main.dart';
@@ -18,7 +19,41 @@ class MyDashboard extends StatefulWidget {
 }
 
 class _MyDashboardState extends State<MyDashboard> {
+  Uint8List? _profileImageBytes;
+  bool _isProfileLoading = true;
+
   @override
+  void initState() {
+    super.initState();
+    _loadProfile();
+  }
+
+  Future<void> _loadProfile() async {
+    try {
+      var userId = UserSession.index;
+      var uri = Uri.parse("$API_URL/profilewith/$userId");
+
+      var response = await http.get(uri);
+
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+
+        setState(() {
+          if (data['profileimage'] != null) {
+            _profileImageBytes = base64Decode(data['profileimage']);
+          }
+          _isProfileLoading = false;
+        });
+      } else {
+        print("Failed to fetch profile: ${response.statusCode}");
+        setState(() => _isProfileLoading = false);
+      }
+    } catch (e) {
+      print("Error fetching profile: $e");
+      setState(() => _isProfileLoading = false);
+    }
+  }
+
   Future<void> logoutUser(BuildContext context) async {
     try {
       final token = UserSession.accessToken;
@@ -30,7 +65,7 @@ class _MyDashboardState extends State<MyDashboard> {
           "Content-Type": "application/json",
         },
         body: jsonEncode({
-          "email": UserSession.email?.trim(), // send email in JSON body
+          "email": UserSession.email?.trim(),
         }),
       );
 
@@ -50,40 +85,23 @@ class _MyDashboardState extends State<MyDashboard> {
 
   String getTodayDate() {
     DateTime now = DateTime.now();
-
-    // List of month names
     List<String> months = [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec",
+      "Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"
     ];
 
-    // Get day with suffix (st, nd, rd, th)
     int day = now.day;
     String suffix = "th";
-    if (day == 1 || day == 21 || day == 31)
-      suffix = "st";
-    else if (day == 2 || day == 22)
-      suffix = "nd";
-    else if (day == 3 || day == 23)
-      suffix = "rd";
+    if (day == 1 || day == 21 || day == 31) suffix = "st";
+    else if (day == 2 || day == 22) suffix = "nd";
+    else if (day == 3 || day == 23) suffix = "rd";
 
     return "$day$suffix of ${months[now.month - 1]} ${now.year}";
   }
 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 0, 81, 255),
-
       body: Stack(
         children: [
           // 🔵 BLUE TOP BACKGROUND
@@ -108,7 +126,7 @@ class _MyDashboardState extends State<MyDashboard> {
                 ),
               ),
               child: Padding(
-                padding: EdgeInsets.only(left: 15, top: 25, right: 15),
+                padding: const EdgeInsets.only(left: 15, top: 25, right: 15),
                 child: Column(
                   children: [
                     Container(
@@ -118,12 +136,10 @@ class _MyDashboardState extends State<MyDashboard> {
                         color: const Color.fromARGB(217, 213, 213, 213),
                         borderRadius: BorderRadius.circular(50),
                       ),
-                      // set of icons
                       child: Row(
                         children: [
                           Padding(
-                            padding: EdgeInsets.only(left: 15, right: 10),
-
+                            padding: const EdgeInsets.only(left: 15, right: 10),
                             child: GestureDetector(
                               onTap: () {
                                 Navigator.push(
@@ -133,8 +149,6 @@ class _MyDashboardState extends State<MyDashboard> {
                                   ),
                                 );
                               },
-
-                              // icon for qrcode
                               child: Image.asset(
                                 "assets/images/qricon.png",
                                 width: 50,
@@ -143,12 +157,11 @@ class _MyDashboardState extends State<MyDashboard> {
                             ),
                           ),
                           Padding(
-                            padding: EdgeInsets.only(left: 15, right: 10),
+                            padding: const EdgeInsets.only(left: 15, right: 10),
                             child: GestureDetector(
                               onTap: () async {
                                 await logoutUser(context);
                               },
-                              // icon for logout
                               child: Image.asset(
                                 "assets/images/analysis.png",
                                 width: 50,
@@ -157,7 +170,7 @@ class _MyDashboardState extends State<MyDashboard> {
                             ),
                           ),
                           Padding(
-                            padding: EdgeInsets.only(left: 15, right: 10),
+                            padding: const EdgeInsets.only(left: 15, right: 10),
                             child: GestureDetector(
                               onTap: () {
                                 Navigator.push(
@@ -167,8 +180,6 @@ class _MyDashboardState extends State<MyDashboard> {
                                   ),
                                 );
                               },
-
-                              // icon for grade
                               child: Image.asset(
                                 "assets/images/study.png",
                                 width: 50,
@@ -176,9 +187,8 @@ class _MyDashboardState extends State<MyDashboard> {
                               ),
                             ),
                           ),
-
                           Padding(
-                            padding: EdgeInsets.only(left: 15, right: 10),
+                            padding: const EdgeInsets.only(left: 15, right: 10),
                             child: GestureDetector(
                               child: Image.asset(
                                 "assets/images/time.png",
@@ -207,45 +217,45 @@ class _MyDashboardState extends State<MyDashboard> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      // user welcome
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
+                          const Text(
                             "Welcome",
                             style: TextStyle(fontSize: 25, color: Colors.white),
                           ),
-                          SizedBox(height: 5),
+                          const SizedBox(height: 5),
                           Text(
                             "${UserSession.index}",
-                            style: TextStyle(fontSize: 25, color: Colors.white),
+                            style: const TextStyle(fontSize: 25, color: Colors.white),
                           ),
                         ],
                       ),
                       GestureDetector(
                         onTap: () {
-                          // Navigate to another page
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) =>
-                                  ProfilePage.ProfileEditPage(),
-                            ), // replace with your page
+                              builder: (context) => const ProfilePage(),
+                            ),
                           );
                         },
-                        // profile circle
-                        child: Container(
-                          width: 70,
-                          height: 70,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(100),
-                          ),
+                        child: CircleAvatar(
+                          radius: 35,
+                          backgroundColor: Colors.white,
+                          backgroundImage: _profileImageBytes != null
+                              ? MemoryImage(_profileImageBytes!) as ImageProvider
+                              : null,
+                          child: _isProfileLoading
+                              ? const CircularProgressIndicator()
+                              : (_profileImageBytes == null
+                                  ? const Icon(Icons.person, size: 35, color: Colors.grey)
+                                  : null),
                         ),
                       ),
                     ],
                   ),
-                  SizedBox(height: 40),
+                  const SizedBox(height: 40),
                   Center(
                     child: Container(
                       width: 400,
@@ -253,7 +263,7 @@ class _MyDashboardState extends State<MyDashboard> {
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(15),
-                        boxShadow: [
+                        boxShadow: const [
                           BoxShadow(
                             color: Colors.black12,
                             blurRadius: 8,
@@ -262,47 +272,35 @@ class _MyDashboardState extends State<MyDashboard> {
                         ],
                       ),
                       child: Padding(
-                        padding: EdgeInsets.only(left: 20, top: 15, right: 20),
+                        padding: const EdgeInsets.only(left: 20, top: 15, right: 20),
                         child: Column(
                           children: [
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      "Working Schedule",
-                                      style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 15,
-                                      ),
-                                    ),
-                                  ],
+                                const Text(
+                                  "Working Schedule",
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 15,
+                                  ),
                                 ),
-                                // todya date like this format
                                 Text(
                                   getTodayDate(),
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     color: Colors.black,
                                     fontSize: 15,
                                   ),
                                 ),
                               ],
                             ),
-                            SizedBox(height: 20),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  "09.00 - 18.00",
-                                  style: TextStyle(
-                                    fontSize: 25,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                              ],
+                            const SizedBox(height: 20),
+                            const Text(
+                              "09.00 - 18.00",
+                              style: TextStyle(
+                                fontSize: 25,
+                                color: Colors.black,
+                              ),
                             ),
                           ],
                         ),

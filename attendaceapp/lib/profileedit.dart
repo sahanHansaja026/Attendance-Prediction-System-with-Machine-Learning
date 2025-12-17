@@ -1,10 +1,13 @@
 import 'dart:io';
+import 'dart:convert';
 import 'package:attendaceapp/config/api.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart';
 import 'package:attendaceapp/session_manager.dart';
+import 'dart:typed_data'; // for Uint8List
+import 'dart:convert'; // for base64Decode
 
 class MyProfileEdit extends StatefulWidget {
   const MyProfileEdit({super.key});
@@ -25,6 +28,47 @@ class _MyProfileEditState extends State<MyProfileEdit> {
   File? _imageFile;
   String? selectedIndex;
   List<String> skills = [];
+  String? profileImageUrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProfile();
+  }
+
+  Uint8List? _imageFileBytes; // Add this as a state variable
+
+  Future<void> _loadProfile() async {
+    try {
+      var userId = UserSession.index; // e.g., "22ug2-0035"
+      var uri = Uri.parse("$API_URL/profilewith/$userId");
+
+      var response = await http.get(uri);
+
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+
+        setState(() {
+          _fullNameController.text = data['full_name'] ?? "";
+          _graduationYearController.text =
+              data['current_year']?.toString() ?? "";
+          _careerGoalController.text = data['career_goal'] ?? "";
+          skills = (data['skills'] ?? "").split(",");
+          selectedIndex = data['degree_program'];
+
+          // Decode the base64 image
+          if (data['profileimage'] != null) {
+            _imageFileBytes = base64Decode(data['profileimage']);
+            _imageFile = null; // clear local image if any
+          }
+        });
+      } else {
+        print("Failed to fetch profile: ${response.statusCode}");
+      }
+    } catch (e) {
+      print("Error fetching profile: $e");
+    }
+  }
 
   // Pick image from camera or gallery
   Future<void> _pickImage(ImageSource source) async {
@@ -33,47 +77,46 @@ class _MyProfileEditState extends State<MyProfileEdit> {
 
     setState(() {
       _imageFile = File(pickedFile.path);
+      profileImageUrl = null; // Clear network image when picking local
     });
   }
 
   void _showImagePickerOptions() {
-  showModalBottomSheet(
-    context: this.context,  // no cast
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-    ),
-    builder: (_) {
-      return Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          ListTile(
-            leading: const Icon(Icons.camera_alt),
-            title: const Text("Camera"),
-            onTap: () {
-              Navigator.pop(this.context); // fixed
-              _pickImage(ImageSource.camera);
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.photo_library),
-            title: const Text("Gallery"),
-            onTap: () {
-              Navigator.pop(this.context); // fixed
-              _pickImage(ImageSource.gallery);
-            },
-          ),
-        ],
-      );
-    },
-  );
-}
+    showModalBottomSheet(
+      context: this.context, // <-- fix type error
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.camera_alt),
+              title: const Text("Camera"),
+              onTap: () {
+                Navigator.pop(this.context);
+                _pickImage(ImageSource.camera);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_library),
+              title: const Text("Gallery"),
+              onTap: () {
+                Navigator.pop(this.context);
+                _pickImage(ImageSource.gallery);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
-
-  // Update profile using HTTP MultipartRequest
+  // Update profile
   Future<void> updateProfile() async {
     try {
-      int userId = int.tryParse(UserSession.index!) ?? 0;// Keep as string
-      var uri = Uri.parse("$API_URL/update/$userId");
+      var uri = Uri.parse("$API_URL/update/${UserSession.index}");
 
       var request = http.MultipartRequest('PUT', uri);
 
@@ -81,6 +124,9 @@ class _MyProfileEditState extends State<MyProfileEdit> {
         request.fields['degree_program'] = selectedIndex!;
       if (_graduationYearController.text.isNotEmpty) {
         request.fields['current_year'] = _graduationYearController.text;
+      }
+      if (_fullNameController.text.isNotEmpty) {
+        request.fields['full_name'] = _fullNameController.text;
       }
       if (skills.isNotEmpty) request.fields['skills'] = skills.join(',');
       if (_careerGoalController.text.isNotEmpty) {
@@ -100,6 +146,9 @@ class _MyProfileEditState extends State<MyProfileEdit> {
 
       if (response.statusCode == 200) {
         print("Profile updated successfully");
+        ScaffoldMessenger.of(
+          this.context,
+        ).showSnackBar(const SnackBar(content: Text("Profile updated")));
       } else {
         print("Failed to update profile: ${response.statusCode}");
       }
@@ -108,7 +157,7 @@ class _MyProfileEditState extends State<MyProfileEdit> {
     }
   }
 
-  // Helper to build TextField Card
+  // Helper for text fields
   Widget _buildTextFieldCard(
     String label,
     String hint,
@@ -189,7 +238,6 @@ class _MyProfileEditState extends State<MyProfileEdit> {
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-            Text("user_id: ${UserSession.index}"),
 
             const SizedBox(height: 10),
             GestureDetector(
@@ -201,11 +249,14 @@ class _MyProfileEditState extends State<MyProfileEdit> {
                     backgroundColor: const Color.fromARGB(255, 0, 81, 255),
                     backgroundImage: _imageFile != null
                         ? FileImage(_imageFile!)
-                        : null,
-                    child: _imageFile == null
+                        : (_imageFileBytes != null
+                              ? MemoryImage(_imageFileBytes!) as ImageProvider
+                              : null),
+                    child: _imageFile == null && _imageFileBytes == null
                         ? const Icon(Icons.person, size: 60, color: Colors.grey)
                         : null,
                   ),
+
                   Positioned(
                     bottom: 0,
                     right: 0,
@@ -226,15 +277,12 @@ class _MyProfileEditState extends State<MyProfileEdit> {
             const Text("Tap to change profile picture"),
             const SizedBox(height: 30),
 
-            // Full Name
             _buildTextFieldCard(
               "Full Name",
               "Enter your full name",
               _fullNameController,
             ),
             const SizedBox(height: 30),
-
-            // Index Number
             _buildTextFieldCard(
               "Index Number",
               "${UserSession.index}",
@@ -291,14 +339,12 @@ class _MyProfileEditState extends State<MyProfileEdit> {
                             ),
                           )
                           .toList(),
-
                   onChanged: (value) => setState(() => selectedIndex = value),
                 ),
               ),
             ),
             const SizedBox(height: 30),
 
-            // Graduation Year
             _buildTextFieldCard(
               "Graduation Year",
               "Enter Your Graduation Year",
@@ -377,19 +423,26 @@ class _MyProfileEditState extends State<MyProfileEdit> {
             ),
             const SizedBox(height: 30),
 
-            // Career Goal
             _buildTextFieldCard(
               "Career Goal",
               "Enter your Career Goal",
               _careerGoalController,
             ),
-            const SizedBox(height: 30),
+            const SizedBox(height: 60),
 
-            // Save Button
             ElevatedButton(
               onPressed: updateProfile,
-              child: const Text("Save Profile"),
+              style: ElevatedButton.styleFrom(
+                minimumSize: const Size(double.infinity, 50),
+                  backgroundColor: const Color.fromARGB(255, 0, 40, 126),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+              ),
+              child: const Text("Save Profile",style: TextStyle(fontSize: 18, color: Colors.white),),
             ),
+
+            const SizedBox(height: 100),
           ],
         ),
       ),

@@ -1,5 +1,6 @@
 import email
 from enum import unique
+from pickle import TRUE
 from database import Base
 from sqlalchemy import Column, LargeBinary, Numeric, Integer, String, ForeignKey, DateTime, UniqueConstraint, Boolean
 from sqlalchemy.orm import relationship
@@ -83,7 +84,8 @@ class StudentProfile(Base):
     __tablename__ = "student_profiles"
 
     profile_id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, unique=True, nullable=False)
+    user_id = Column(String, unique=True, nullable=False)
+    full_name=Column(String,nullable=True)
     degree_program = Column(String, nullable=False)
     current_year = Column(Integer, nullable=False)
     skills = Column(String, nullable=True)
