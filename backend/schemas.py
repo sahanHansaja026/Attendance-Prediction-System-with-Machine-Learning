@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, Field,constr # type: ignore
+from pydantic import BaseModel, EmailStr, Field,constr 
 from typing import Optional
 from datetime import datetime
 from datetime import date
@@ -32,9 +32,6 @@ class UserOut(BaseModel):
     class Config:
         orm_mode = True
 
-# Session Schemas
-# -----------------------------
-# Input schema
 class SesstionCreate(BaseModel):
     userid: int
     module_id: int
@@ -42,7 +39,6 @@ class SesstionCreate(BaseModel):
     start_time: str
     end_time: str
 
-# Response schema
 class SesstionResponse(BaseModel):
     sessionid: int
     userid: int
@@ -122,12 +118,12 @@ class CourseCreate(CourseBase):
 class StudentProfileBase(BaseModel):
     degree_program: Optional[str] = None
     current_year: Optional[int] = None
-    skills: Optional[str] = None  # Could store as comma-separated string
+    skills: Optional[str] = None 
     career_goal: Optional[str] = None
     full_name:Optional[str]= None
 
 class StudentProfileUpdate(StudentProfileBase):
-    pass  # Used for updating profile, all fields optional
+    pass
 
 class StudentProfileOut(StudentProfileBase):
     user_id: str
@@ -135,3 +131,17 @@ class StudentProfileOut(StudentProfileBase):
 
     class Config:
         orm_mode = True
+        
+class StudentResultCreate(BaseModel):
+    user_id: str
+    degree_id: int
+    grade: Optional[str] = None
+    marks: Optional[str] = None   # ✔ STRING
+    completed: Optional[bool] = True
+
+
+class StudentResultResponse(StudentResultCreate):
+    result_id: int
+
+    class Config:
+        from_attributes = True

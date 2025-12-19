@@ -97,10 +97,10 @@ class StudentResult(Base):
     __tablename__ = "student_results"
 
     result_id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("gusts.gust_id"), nullable=False)
+    user_id = Column(String, nullable=False)
     degree_id = Column(Integer, ForeignKey("courses.course_id"), nullable=False)
     grade = Column(String, nullable=True)
-    marks = Column(Integer, nullable=True)
+    marks = Column(String, nullable=True)
     completed = Column(Boolean, default=True)
 
 

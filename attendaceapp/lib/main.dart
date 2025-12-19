@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:attendaceapp/config/api.dart';
+import 'package:attendaceapp/eroor.dart';
 import 'package:attendaceapp/home.dart';
 import 'package:attendaceapp/session_manager.dart';
 import 'package:flutter/material.dart';
@@ -69,9 +70,13 @@ class _MyHomePageState extends State<MyHomePage> {
           MaterialPageRoute(builder: (_) => MyDashboard()),
         );
       } else {
-        setState(() {
-          message = "Login failed: ${response.body}";
-        });
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) =>
+                ErrorPage(errorMessage: "Login failed: ${response.body}"),
+          ),
+        );
       }
     } catch (e) {
       setState(() {
@@ -167,7 +172,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       textAlign: TextAlign.center,
                     ),
                   ),
-              ], 
+              ],
             ),
           ),
         ),
