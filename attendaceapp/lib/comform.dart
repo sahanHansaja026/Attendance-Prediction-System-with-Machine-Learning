@@ -40,7 +40,7 @@ class _ConfirmAttendancePageState extends State<ConfirmAttendancePage> {
 
       setState(() {
         sessionDataList = [
-          {"field": "Module Name", "value": data['module_name'] ?? ""},
+         {"field": "Module Name", "value": data['module_name'] ?? ""},
           {"field": "Location", "value": data['location_name'] ?? ""},
           {"field": "Start Time", "value": data['start_time'] ?? ""},
           {"field": "End Time", "value": data['end_time'] ?? ""},
@@ -220,17 +220,17 @@ class _ConfirmAttendancePageState extends State<ConfirmAttendancePage> {
                 DataTable(
                   columns: const [
                     DataColumn(
-                      label: Text("Field", style: TextStyle(fontSize: 18)),
+                      label: Text("Field", style: TextStyle(fontSize: 18,color: Colors.blue)),
                     ),
                     DataColumn(
-                      label: Text("Value", style: TextStyle(fontSize: 18)),
+                      label: Text("Value", style: TextStyle(fontSize: 18,color: Colors.blue)),
                     ),
                   ],
                   rows: sessionDataList.map((data) {
                     return DataRow(
                       cells: [
-                        DataCell(Text(data["field"] ?? "")),
-                        DataCell(Text(data["value"] ?? "")),
+                        DataCell(Text(data["field"] ?? "",style: TextStyle(color: const Color.fromARGB(255, 0, 0, 0)),)),
+                        DataCell(Text(data["value"] ?? "",style: TextStyle(color: const Color.fromARGB(255, 0, 0, 0)),)),
                       ],
                     );
                   }).toList(),

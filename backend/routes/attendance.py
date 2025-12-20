@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from datetime import datetime
 import pytz
-
+from typing import List
 from database import get_db
 import models
 from schemas import AttendanceCreate
@@ -66,3 +66,32 @@ def get_attendances(session_id: str, db: Session = Depends(get_db)):
         } 
         for att in attendances
     ]
+
+# GET attendances by student_id
+@router.get("/attendance_info/{student_id}", response_model=List[dict])
+def get_attendance_info(student_id: str, db: Session = Depends(get_db)):
+    # Query Attendance, join with Sesstion and Course
+    attendances = (
+        db.query(models.Attendance)
+        .join(models.Sesstion, models.Attendance.session_id == models.Sesstion.sessionid)
+        .join(models.Course, models.Sesstion.module_id == models.Course.course_id)
+        .filter(models.Attendance.student_id == student_id)
+        .all()
+    )
+
+    if not attendances:
+        raise HTTPException(status_code=404, detail="No attendance records found for this student.")
+
+    result = []
+    for att in attendances:
+        session = db.query(models.Sesstion).filter(models.Sesstion.sessionid == att.session_id).first()
+        course = db.query(models.Course).filter(models.Course.course_id == session.module_id).first()
+        result.append({
+            "location_name": session.location_name,
+            "course_name": course.course_name,
+            "mark_at": att.mark_at,
+            "latitude": att.latitude,    # for map button in frontend
+            "longitude": att.longitude,  # for map button in frontend
+        })
+    
+    return result

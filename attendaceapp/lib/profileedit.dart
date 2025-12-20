@@ -20,7 +20,7 @@ class _MyProfileEditState extends State<MyProfileEdit> {
   // Controllers
   final TextEditingController _fullNameController = TextEditingController();
   final TextEditingController _graduationYearController =
-      TextEditingController();
+  TextEditingController();
   final TextEditingController _careerGoalController = TextEditingController();
   final TextEditingController _skillController = TextEditingController();
 

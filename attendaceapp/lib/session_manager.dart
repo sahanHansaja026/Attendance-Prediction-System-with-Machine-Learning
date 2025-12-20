@@ -7,6 +7,7 @@ class UserSession {
   static String? email;
   static String? index;
   static String? graduation_year;
+  static int? gustId; // ✅
 
   static Future<void> loadSession() async {
     final prefs = await SharedPreferences.getInstance();
@@ -15,6 +16,7 @@ class UserSession {
     name = prefs.getString("name");
     email = prefs.getString("email");
     index = prefs.getString("index");
+    gustId = prefs.getInt("gust_id");
     graduation_year=prefs.getString("graduation_year");
   }
 

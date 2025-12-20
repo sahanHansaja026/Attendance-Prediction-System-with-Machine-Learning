@@ -22,7 +22,7 @@ class Sesstion(Base):
 
     sessionid = Column(Integer, primary_key=True, index=True)
     userid = Column(Integer, ForeignKey("users.id"), nullable=False)
-    module_id = Column(Integer, nullable=False)
+    module_id = Column(Integer, ForeignKey("courses.course_id"), nullable=False)
     location_name = Column(String, nullable=False)
     start_time = Column(String, nullable=False)
     end_time = Column(String, nullable=False)
@@ -30,6 +30,9 @@ class Sesstion(Base):
         DateTime(timezone=True),
         default=lambda: datetime.now(pytz.timezone("Asia/Colombo")),
     )
+
+    # Correct relationship
+    course = relationship("Course", backref="sessions", foreign_keys=[module_id])
 
 
 class SessionToken(Base):
@@ -71,7 +74,7 @@ class Attendance(Base):
 
     attendance_id = Column(Integer, primary_key=True, index=True)
     session_id = Column(Integer, ForeignKey("sesstion.sessionid"), nullable=False)
-    student_id = Column(Integer, ForeignKey("gusts.gust_id"), nullable=False)
+    student_id = Column(String, nullable=False)
     latitude = Column(String, nullable=False)
     longitude = Column(String, nullable=False)
     mark_at = Column(

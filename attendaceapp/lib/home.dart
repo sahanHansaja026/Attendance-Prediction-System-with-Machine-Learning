@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:attendaceapp/attendanceshow.dart';
 import 'package:attendaceapp/config/api.dart';
 import 'package:attendaceapp/main.dart';
 import 'package:attendaceapp/profileshow.dart';
@@ -64,9 +65,7 @@ class _MyDashboardState extends State<MyDashboard> {
           "Authorization": "Bearer $token",
           "Content-Type": "application/json",
         },
-        body: jsonEncode({
-          "email": UserSession.email?.trim(),
-        }),
+        body: jsonEncode({"email": UserSession.email?.trim()}),
       );
 
       if (response.statusCode == 200) {
@@ -86,14 +85,28 @@ class _MyDashboardState extends State<MyDashboard> {
   String getTodayDate() {
     DateTime now = DateTime.now();
     List<String> months = [
-      "Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
     ];
 
     int day = now.day;
     String suffix = "th";
-    if (day == 1 || day == 21 || day == 31) suffix = "st";
-    else if (day == 2 || day == 22) suffix = "nd";
-    else if (day == 3 || day == 23) suffix = "rd";
+    if (day == 1 || day == 21 || day == 31)
+      suffix = "st";
+    else if (day == 2 || day == 22)
+      suffix = "nd";
+    else if (day == 3 || day == 23)
+      suffix = "rd";
 
     return "$day$suffix of ${months[now.month - 1]} ${now.year}";
   }
@@ -190,6 +203,14 @@ class _MyDashboardState extends State<MyDashboard> {
                           Padding(
                             padding: const EdgeInsets.only(left: 15, right: 10),
                             child: GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ShowAttendance(),
+                                  ),
+                                );
+                              },
                               child: Image.asset(
                                 "assets/images/time.png",
                                 width: 50,
@@ -227,30 +248,43 @@ class _MyDashboardState extends State<MyDashboard> {
                           const SizedBox(height: 5),
                           Text(
                             "${UserSession.index}",
-                            style: const TextStyle(fontSize: 25, color: Colors.white),
+                            style: const TextStyle(
+                              fontSize: 25,
+                              color: Colors.white,
+                            ),
                           ),
                         ],
                       ),
                       GestureDetector(
-                        onTap: () {
-                          Navigator.push(
+                        onTap: () async {
+                          await Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (context) => const ProfilePage(),
                             ),
                           );
+
+                          // Auto refresh profile when coming back
+                          setState(() => _isProfileLoading = true);
+                          await _loadProfile();
                         },
+
                         child: CircleAvatar(
                           radius: 35,
                           backgroundColor: Colors.white,
                           backgroundImage: _profileImageBytes != null
-                              ? MemoryImage(_profileImageBytes!) as ImageProvider
+                              ? MemoryImage(_profileImageBytes!)
+                                    as ImageProvider
                               : null,
                           child: _isProfileLoading
                               ? const CircularProgressIndicator()
                               : (_profileImageBytes == null
-                                  ? const Icon(Icons.person, size: 35, color: Colors.grey)
-                                  : null),
+                                    ? const Icon(
+                                        Icons.person,
+                                        size: 35,
+                                        color: Colors.grey,
+                                      )
+                                    : null),
                         ),
                       ),
                     ],
@@ -272,7 +306,11 @@ class _MyDashboardState extends State<MyDashboard> {
                         ],
                       ),
                       child: Padding(
-                        padding: const EdgeInsets.only(left: 20, top: 15, right: 20),
+                        padding: const EdgeInsets.only(
+                          left: 20,
+                          top: 15,
+                          right: 20,
+                        ),
                         child: Column(
                           children: [
                             Row(
