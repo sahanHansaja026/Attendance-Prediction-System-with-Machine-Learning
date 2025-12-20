@@ -84,5 +84,33 @@ def gust_logout(token_data: schemas.TokenData = Body(...), db: Session = Depends
     return {"message": "Logout successful"}
 
 
+@router.post("/gust_login")
+def gust_login(data: schemas.GustLogin, db: Session = Depends(get_db)):
+    email = data.email
+    password = data.password
 
+    gust = db.query(models.Gust).filter(models.Gust.email == email).first()
+
+    if not gust:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    if not veryfy_password(password, gust.hashed_password):
+        raise HTTPException(status_code=400, detail="Incorrect password")
+
+    access_token = create_access_token({"sub": gust.email})
+    refresh_token = create_refresh_token({"sub": gust.email})
+
+    gust.refresh_token = refresh_token
+    db.commit()
+
+    return {
+        "access_token": access_token,
+        "refresh_token": refresh_token,
+        "token_type": "bearer",
+        "user": {
+            "name": gust.name,
+            "email": gust.email,
+            "index": gust.index
+        }
+    }
 
