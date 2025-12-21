@@ -145,3 +145,11 @@ class StudentResultResponse(StudentResultCreate):
 
     class Config:
         from_attributes = True
+
+class LocationCreate(BaseModel):
+    name: str
+    latitude: float
+    longitude: float
+
+class CalendarEmailRequest(BaseModel):
+    email: str

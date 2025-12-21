@@ -22,6 +22,13 @@ function ButtonPage({ setActivePage1 }: ButtonPageProps) {
                 >
                     + Results
                 </button>
+
+                <button
+                    className='addbtn'
+                    onClick={() => setActivePage1("insertlocations")}
+                >
+                    + Locations
+                </button>
             </div>
         </div>
     );

@@ -18,6 +18,7 @@ import ShowAttendancePage from "./compnents/showattendance";
 import AddCourseDetails from "./compnents/addcourses";
 import AddResultsPage from "./compnents/addresults";
 import { useNavigate } from "react-router-dom";
+import InsertLocations from "./compnents/insertlocation";
 
 type User = {
     username: string;
@@ -45,6 +46,7 @@ export default function Dashboard() {
         adddetail: "Add Informations",
         addcourses: "Add Modules",
         addresults: "Add Student Results",
+        insertlocations: "Add Locations",
     };
 
     const navigate = useNavigate();
@@ -145,6 +147,7 @@ export default function Dashboard() {
                     {activePage === "adddetail" && <ButtonsPage setActivePage1={setActivePage} />}
                     {activePage === "showuser" && <ShowUsers setActivePage={setActivePage} />}
                     {activePage === "adduser" && <AddUsers />}
+                    {activePage === "insertlocations" && <InsertLocations />}
                     {activePage === "addresults" && <AddResultsPage />}
                     {activePage === "addcourses" && <AddCourseDetails />}
                     {activePage === "attendaceshow" && <ShowAttendancePage />}

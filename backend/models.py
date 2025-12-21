@@ -2,7 +2,7 @@ import email
 from enum import unique
 from pickle import TRUE
 from database import Base
-from sqlalchemy import Column, LargeBinary, Numeric, Integer, String, ForeignKey, DateTime, UniqueConstraint, Boolean
+from sqlalchemy import Column, Float, LargeBinary, Numeric, Integer, String, ForeignKey, DateTime, UniqueConstraint, Boolean
 from sqlalchemy.orm import relationship
 from datetime import datetime
 import pytz
@@ -123,3 +123,11 @@ class KnowledgeBase(Base):
     category = Column(String, nullable=False)
     content = Column(String, nullable=False)
     source = Column(String, nullable=True)
+    
+class LocationsBase(Base):
+    __tablename__="Locations"
+    
+    location_id=Column(Integer, primary_key=True, index=True)
+    name=Column(String, nullable=False)
+    latitude = Column(Float, nullable=False)
+    longitude = Column(Float, nullable=False)
