@@ -62,6 +62,7 @@ class CourseResponse(BaseModel):
     course_name: str
     courseindex: str
     owner: str
+    credits: int 
 
     class Config:
         orm_mode = True
@@ -151,5 +152,11 @@ class LocationCreate(BaseModel):
     latitude: float
     longitude: float
 
-class CalendarEmailRequest(BaseModel):
-    email: str
+class LocationResponse(BaseModel):
+    location_id: int
+    name: str
+    latitude: float
+    longitude: float
+
+    class Config:
+        orm_mode = True

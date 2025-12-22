@@ -5,23 +5,23 @@ interface ButtonPageProps {
     setActivePage1: (page: string) => void;
 }
 
-function ButtonPage({ setActivePage1 }: ButtonPageProps) {
+function ShowButtonPage({ setActivePage1 }: ButtonPageProps) {
     return (
         <div className='button'>
             <div className='buttoncontainer'>
 
                 <button
                     className='addbtn'
-                    onClick={() => setActivePage1("adduser")}
+                    onClick={() => setActivePage1("showuser")}
                 >
-                    + Add New User
+                    View Users
                 </button>
 
                 <button
                     className='addbtn'
-                    onClick={() => setActivePage1("addcourses")}
+                    onClick={() => setActivePage1("showcourses")}
                 >
-                    + Add Course
+                    View Course
                 </button>
             </div>
             <div className='buttoncontainer'>
@@ -34,13 +34,13 @@ function ButtonPage({ setActivePage1 }: ButtonPageProps) {
 
                 <button
                     className='addbtn'
-                    onClick={() => setActivePage1("insertlocations")}
+                    onClick={() => setActivePage1("showlocation")}
                 >
-                    + Locations
+                    View Locations
                 </button>
             </div>
         </div>
     );
 }
 
-export default ButtonPage;
+export default ShowButtonPage;

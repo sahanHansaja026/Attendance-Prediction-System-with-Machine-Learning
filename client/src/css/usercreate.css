@@ -5,20 +5,9 @@
 
 .createuser .buttoncontainer {
     padding-left: 5px;
-    width: 250px;
-    margin-right: 400px;
+    width: 1050px;
 }
 
-.createuser .addbtn {
-    background-color: #717171;
-    border: 0px;
-    border-color: none;
-    width: 100%;
-    padding: 12px;
-    color: #000000;
-    font-size: 20px;
-    border-radius: 8px;
-}
 
 .addbtn:hover {
     background-color: #989999;
@@ -32,7 +21,7 @@
 }
 
 .createuser .user-table {
-    width: 100%;
+    width: 90%;
     margin-top: 20px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     background-color: white;
@@ -82,7 +71,7 @@
 }
 .createuser .search-input {
     padding: 8px 8px;
-    width: 300px;
+    width: 88.5%;
     border-radius: 6px;
     border: 1px solid #000000;
     font-size: 14px;

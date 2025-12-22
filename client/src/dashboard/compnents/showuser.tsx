@@ -43,14 +43,6 @@ function ShowUsers({ setActivePage }: ShowUsersProps) {
   return (
     <div className='createuser'>
       <div className='displaybtncontainer '>
-        <div className='buttoncontainer'>
-          <button
-            className='addbtn'
-            onClick={() => setActivePage("adduser")}
-          >
-            + Add New User
-          </button>
-        </div>
         <input
           type="text"
           placeholder="Search by Name, Email, or Index"

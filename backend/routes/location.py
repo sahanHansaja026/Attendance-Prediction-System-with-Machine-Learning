@@ -1,8 +1,9 @@
+from typing import List
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from models import LocationsBase
-from schemas import LocationCreate
+from schemas import LocationCreate, LocationResponse
 from database import get_db
 
 router = APIRouter()
@@ -24,3 +25,7 @@ def create_location(
     db.refresh(new_location)
 
     return new_location
+
+@router.get("/locations", response_model=List[LocationResponse])
+def get_locations(db: Session = Depends(get_db)):
+    return db.query(LocationsBase).all()

@@ -19,6 +19,9 @@ import AddCourseDetails from "./compnents/addcourses";
 import AddResultsPage from "./compnents/addresults";
 import { useNavigate } from "react-router-dom";
 import InsertLocations from "./compnents/insertlocation";
+import ShowButtonPage from "./compnents/showbuttons";
+import ShowCoursesPage from "./compnents/showcourses";
+import ShowLocation from "./compnents/showlocation";
 
 type User = {
     username: string;
@@ -47,6 +50,9 @@ export default function Dashboard() {
         addcourses: "Add Modules",
         addresults: "Add Student Results",
         insertlocations: "Add Locations",
+        showinformations: "Contents",
+        showcourses: "View Modules",
+        showlocations:"View Locations"
     };
 
     const navigate = useNavigate();
@@ -122,8 +128,8 @@ export default function Dashboard() {
                     </div>
 
                     <div
-                        className={`sidebar-item ${activePage === "showuser" ? "active" : ""}`}
-                        onClick={() => setActivePage("showuser")}
+                        className={`sidebar-item ${activePage === "showinformations" ? "active" : ""}`}
+                        onClick={() => setActivePage("showinformations")}
                     >
                         <img src={AddUsersIcon} alt="add users" className="iconadd" />
                     </div>
@@ -145,10 +151,17 @@ export default function Dashboard() {
                     {activePage === "analysis" && <div>Analysis Page Content</div>}
                     {activePage === "history" && <div>History Page Content</div>}
                     {activePage === "adddetail" && <ButtonsPage setActivePage1={setActivePage} />}
-                    {activePage === "showuser" && <ShowUsers setActivePage={setActivePage} />}
+                    {activePage === "showinformations" && <ShowButtonPage setActivePage1={setActivePage} />}
                     {activePage === "adduser" && <AddUsers />}
+                    {activePage === "showuser" && <ShowUsers setActivePage={function (page: string): void {
+                        throw new Error("Function not implemented.");
+                    } } />}
                     {activePage === "insertlocations" && <InsertLocations />}
                     {activePage === "addresults" && <AddResultsPage />}
+                    {activePage === "showcourses" && <ShowCoursesPage setActivePage={function (page: string): void {
+                        throw new Error("Function not implemented.");
+                    }} />}
+                    {activePage === "showlocation" && <ShowLocation />}
                     {activePage === "addcourses" && <AddCourseDetails />}
                     {activePage === "attendaceshow" && <ShowAttendancePage />}
                     {activePage === "sessionqr" && <SessionQR setActivePage={setActivePage} />}
