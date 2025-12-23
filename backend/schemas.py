@@ -1,5 +1,5 @@
 from pydantic import BaseModel, EmailStr, Field,constr 
-from typing import Optional
+from typing import Dict, List, Optional
 from datetime import datetime
 from datetime import date
 import pytz
@@ -160,3 +160,8 @@ class LocationResponse(BaseModel):
 
     class Config:
         orm_mode = True
+class MLRecommendationResponse(BaseModel):
+    user_id: str
+    relevance: int
+    confidence: float
+    recommended_courses: Optional[List[Dict]] = []

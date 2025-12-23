@@ -20,7 +20,7 @@ class _MyProfileEditState extends State<MyProfileEdit> {
   // Controllers
   final TextEditingController _fullNameController = TextEditingController();
   final TextEditingController _graduationYearController =
-  TextEditingController();
+      TextEditingController();
   final TextEditingController _careerGoalController = TextEditingController();
   final TextEditingController _skillController = TextEditingController();
 
@@ -54,7 +54,7 @@ class _MyProfileEditState extends State<MyProfileEdit> {
               data['current_year']?.toString() ?? "";
           _careerGoalController.text = data['career_goal'] ?? "";
           skills = (data['skills'] ?? "").split(",");
-          selectedIndex = data['degree_program'];
+          selectedIndex = data['degree_program']?.trim();
 
           // Decode the base64 image
           if (data['profileimage'] != null) {
@@ -238,7 +238,6 @@ class _MyProfileEditState extends State<MyProfileEdit> {
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-
             const SizedBox(height: 10),
             GestureDetector(
               onTap: _showImagePickerOptions,
@@ -434,12 +433,15 @@ class _MyProfileEditState extends State<MyProfileEdit> {
               onPressed: updateProfile,
               style: ElevatedButton.styleFrom(
                 minimumSize: const Size(double.infinity, 50),
-                  backgroundColor: const Color.fromARGB(255, 0, 40, 126),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
+                backgroundColor: const Color.fromARGB(255, 0, 40, 126),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
               ),
-              child: const Text("Save Profile",style: TextStyle(fontSize: 18, color: Colors.white),),
+              child: const Text(
+                "Save Profile",
+                style: TextStyle(fontSize: 18, color: Colors.white),
+              ),
             ),
 
             const SizedBox(height: 100),

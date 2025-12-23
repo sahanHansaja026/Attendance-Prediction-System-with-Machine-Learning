@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:attendaceapp/analysis.dart';
 import 'package:attendaceapp/attendanceshow.dart';
 import 'package:attendaceapp/config/api.dart';
 import 'package:attendaceapp/main.dart';
@@ -172,8 +173,13 @@ class _MyDashboardState extends State<MyDashboard> {
                           Padding(
                             padding: const EdgeInsets.only(left: 15, right: 10),
                             child: GestureDetector(
-                              onTap: () async {
-                                await logoutUser(context);
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => MyAnalysisPage(),
+                                  ),
+                                );
                               },
                               child: Image.asset(
                                 "assets/images/analysis.png",
@@ -213,6 +219,19 @@ class _MyDashboardState extends State<MyDashboard> {
                               },
                               child: Image.asset(
                                 "assets/images/time.png",
+                                width: 50,
+                                height: 50,
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 15, right: 10),
+                            child: GestureDetector(
+                              onTap: () async {
+                                await logoutUser(context);
+                              },
+                              child: Image.asset(
+                                "assets/images/logout.png",
                                 width: 50,
                                 height: 50,
                               ),
