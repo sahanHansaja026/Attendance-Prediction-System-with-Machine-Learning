@@ -153,7 +153,7 @@ class _MyDashboardState extends State<MyDashboard> {
                       child: Row(
                         children: [
                           Padding(
-                            padding: const EdgeInsets.only(left: 15, right: 10),
+                            padding: const EdgeInsets.only(left: 15, right: 6),
                             child: GestureDetector(
                               onTap: () {
                                 Navigator.push(
@@ -171,7 +171,7 @@ class _MyDashboardState extends State<MyDashboard> {
                             ),
                           ),
                           Padding(
-                            padding: const EdgeInsets.only(left: 15, right: 10),
+                            padding: const EdgeInsets.only(left: 8, right: 6),
                             child: GestureDetector(
                               onTap: () {
                                 Navigator.push(
@@ -189,7 +189,7 @@ class _MyDashboardState extends State<MyDashboard> {
                             ),
                           ),
                           Padding(
-                            padding: const EdgeInsets.only(left: 15, right: 10),
+                            padding: const EdgeInsets.only(left: 8, right: 6),
                             child: GestureDetector(
                               onTap: () {
                                 Navigator.push(
@@ -207,7 +207,7 @@ class _MyDashboardState extends State<MyDashboard> {
                             ),
                           ),
                           Padding(
-                            padding: const EdgeInsets.only(left: 15, right: 10),
+                            padding: const EdgeInsets.only(left: 8, right: 6),
                             child: GestureDetector(
                               onTap: () {
                                 Navigator.push(
@@ -225,7 +225,7 @@ class _MyDashboardState extends State<MyDashboard> {
                             ),
                           ),
                           Padding(
-                            padding: const EdgeInsets.only(left: 15, right: 10),
+                            padding: const EdgeInsets.only(left: 8, right: 6),
                             child: GestureDetector(
                               onTap: () async {
                                 await logoutUser(context);

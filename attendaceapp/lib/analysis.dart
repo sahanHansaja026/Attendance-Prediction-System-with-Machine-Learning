@@ -34,7 +34,9 @@ class _MyAnalysisPageState extends State<MyAnalysisPage> {
         var decoded = json.decode(response.body);
 
         if (decoded['recommended_courses'] is String) {
-          decoded['recommended_courses'] = json.decode(decoded['recommended_courses']);
+          decoded['recommended_courses'] = json.decode(
+            decoded['recommended_courses'],
+          );
         }
 
         debugPrint("Decoded ML Result: $decoded");
@@ -45,13 +47,21 @@ class _MyAnalysisPageState extends State<MyAnalysisPage> {
         });
       } else {
         setState(() {
-          _mlResult = {"relevance": 0, "confidence": 0.0, "recommended_courses": []};
+          _mlResult = {
+            "relevance": 0,
+            "confidence": 0.0,
+            "recommended_courses": [],
+          };
           _isLoading = false;
         });
       }
     } catch (e) {
       setState(() {
-        _mlResult = {"relevance": 0, "confidence": 0.0, "recommended_courses": []};
+        _mlResult = {
+          "relevance": 0,
+          "confidence": 0.0,
+          "recommended_courses": [],
+        };
         _isLoading = false;
       });
       debugPrint("Error fetching ML data: $e");
@@ -73,17 +83,36 @@ class _MyAnalysisPageState extends State<MyAnalysisPage> {
         ? List.from(_mlResult!['recommended_courses'])
         : [];
 
-    final internalCourses =
-        recommendedCourses.where((c) => c.containsKey('course_id')).toList();
-    final externalCourses =
-        recommendedCourses.where((c) => c.containsKey('url')).toList();
+    final internalCourses = recommendedCourses
+        .where((c) => c.containsKey('course_id'))
+        .toList();
+    final externalCourses = recommendedCourses
+        .where((c) => c.containsKey('url'))
+        .toList();
 
     return Scaffold(
       backgroundColor: Colors.grey[100],
       appBar: AppBar(
-        title: const Text("ML Course Recommendations"),
-        centerTitle: true,
-        backgroundColor: Colors.deepPurple,
+        backgroundColor: const Color.fromARGB(255, 0, 81, 255),
+        elevation: 0,
+        leading: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(30),
+            onTap: () => Navigator.pop(context),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.2),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.arrow_back, color: Colors.white),
+            ),
+          ),
+        ),
+        title: const Text(
+          "ML Course Recommendations",
+          style: TextStyle(fontWeight: FontWeight.bold,color: Colors.white),
+        ),
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -94,7 +123,9 @@ class _MyAnalysisPageState extends State<MyAnalysisPage> {
                 children: [
                   // User Info
                   Card(
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                     elevation: 4,
                     color: Colors.deepPurple[50],
                     child: Padding(
@@ -107,7 +138,10 @@ class _MyAnalysisPageState extends State<MyAnalysisPage> {
                           const SizedBox(height: 4),
                           Text(
                             "Index: ${UserSession.index}",
-                            style: const TextStyle(fontSize: 14, color: Colors.black87),
+                            style: const TextStyle(
+                              fontSize: 14,
+                              color: Colors.black87,
+                            ),
                           ),
                           const SizedBox(height: 12),
                           Row(
@@ -117,7 +151,12 @@ class _MyAnalysisPageState extends State<MyAnalysisPage> {
                                   "Relevance: ${_mlResult?['relevance'] ?? 0}",
                                   style: const TextStyle(color: Colors.white),
                                 ),
-                                backgroundColor: Colors.deepPurple,
+                                backgroundColor: Color.fromARGB(
+                                  255,
+                                  0,
+                                  81,
+                                  255,
+                                ),
                               ),
                               const SizedBox(width: 10),
                               Chip(
@@ -125,7 +164,12 @@ class _MyAnalysisPageState extends State<MyAnalysisPage> {
                                   "Confidence: ${((_mlResult?['confidence'] ?? 0.0) * 100).toStringAsFixed(2)}%",
                                   style: const TextStyle(color: Colors.white),
                                 ),
-                                backgroundColor: Colors.deepPurpleAccent,
+                                backgroundColor: Color.fromARGB(
+                                  255,
+                                  0,
+                                  81,
+                                  255,
+                                ),
                               ),
                             ],
                           ),
@@ -141,7 +185,10 @@ class _MyAnalysisPageState extends State<MyAnalysisPage> {
                       padding: EdgeInsets.symmetric(vertical: 8),
                       child: Text(
                         "Recommended Courses",
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ...internalCourses.map((course) {
@@ -150,12 +197,20 @@ class _MyAnalysisPageState extends State<MyAnalysisPage> {
                     final skills = course['related_skills'] ?? '';
 
                     return Card(
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                       elevation: 3,
                       margin: const EdgeInsets.symmetric(vertical: 6),
                       child: ListTile(
-                        leading: const Icon(Icons.book, color: Colors.deepPurple),
-                        title: Text(courseName, style: const TextStyle(fontWeight: FontWeight.bold)),
+                        leading: const Icon(
+                          Icons.book,
+                          color: Color.fromARGB(255, 0, 81, 255),
+                        ),
+                        title: Text(
+                          courseName,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
                         subtitle: Text('Category: $category\nSkills: $skills'),
                       ),
                     );
@@ -169,7 +224,10 @@ class _MyAnalysisPageState extends State<MyAnalysisPage> {
                       padding: EdgeInsets.symmetric(vertical: 8),
                       child: Text(
                         "External Learning Resources",
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ...externalCourses.map((course) {
@@ -180,7 +238,9 @@ class _MyAnalysisPageState extends State<MyAnalysisPage> {
                     return GestureDetector(
                       onTap: url.isNotEmpty ? () => _launchURL(url) : null,
                       child: Card(
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                         elevation: 3,
                         margin: const EdgeInsets.symmetric(vertical: 6),
                         child: Padding(
@@ -190,13 +250,18 @@ class _MyAnalysisPageState extends State<MyAnalysisPage> {
                             children: [
                               Row(
                                 children: [
-                                  const Icon(Icons.link, color: Colors.deepPurple),
+                                  const Icon(
+                                    Icons.link,
+                                    color: Color.fromARGB(255, 0, 81, 255),
+                                  ),
                                   const SizedBox(width: 8),
                                   Expanded(
                                     child: Text(
                                       courseName,
                                       style: const TextStyle(
-                                          fontWeight: FontWeight.bold, fontSize: 16),
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -219,7 +284,11 @@ class _MyAnalysisPageState extends State<MyAnalysisPage> {
                       child: Column(
                         children: const [
                           SizedBox(height: 50),
-                          Icon(Icons.sentiment_dissatisfied, size: 60, color: Colors.grey),
+                          Icon(
+                            Icons.sentiment_dissatisfied,
+                            size: 60,
+                            color: Colors.grey,
+                          ),
                           SizedBox(height: 10),
                           Text(
                             "No recommended courses found.",

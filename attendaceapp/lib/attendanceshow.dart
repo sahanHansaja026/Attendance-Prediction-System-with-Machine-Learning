@@ -95,7 +95,7 @@ class _ShowAttendanceState extends State<ShowAttendance> {
         "${dt.day}${daySuffix(dt.day)} ${DateFormat('MMMM yyyy').format(dt)}";
     final formattedTime = DateFormat('HH:mm').format(dt);
 
-    return "$formattedDate, $formattedTime";
+    return "$formattedDate\n $formattedTime";
   }
 
   @override
@@ -121,7 +121,7 @@ class _ShowAttendanceState extends State<ShowAttendance> {
         ),
         title: const Text(
           "Attendance Records",
-          style: TextStyle(fontWeight: FontWeight.bold),
+          style: TextStyle(fontWeight: FontWeight.bold,color: Colors.white),
         ),
       ),
       body: FutureBuilder<List<Attendance>>(
