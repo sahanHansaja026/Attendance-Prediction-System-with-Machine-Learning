@@ -165,3 +165,14 @@ class MLRecommendationResponse(BaseModel):
     relevance: int
     confidence: float
     recommended_courses: Optional[List[Dict]] = []
+    
+class StudentResultResponseuser(BaseModel):
+    result_id: int
+    user_id: str
+    grade: str | None
+    marks: str | None
+    completed: bool
+    course_name: str
+
+    class Config:
+        orm_mode = True

@@ -24,3 +24,41 @@ def create_student_result(
     db.refresh(new_result)
 
     return new_result
+
+from typing import List
+
+@router.get(
+    "/student-results/{user_id}",
+    response_model=List[schemas.StudentResultResponseuser]
+)
+def get_results_by_user_id(
+    user_id: str,
+    db: Session = Depends(get_db)
+):
+    # Join StudentResult with Course using degree_id foreign key
+    results = (
+        db.query(
+            models.StudentResult.result_id,
+            models.StudentResult.user_id,
+            models.StudentResult.grade,
+            models.StudentResult.marks,
+            models.StudentResult.completed,
+            models.Course.course_name   # <-- Use the correct class name
+        )
+        .join(models.Course, models.StudentResult.degree_id == models.Course.course_id)
+        .filter(models.StudentResult.user_id == user_id)
+        .all()
+    )
+
+    # Convert to list of dictionaries
+    return [
+        {
+            "result_id": r.result_id,
+            "user_id": r.user_id,
+            "grade": r.grade,
+            "marks": r.marks,
+            "completed": r.completed,
+            "course_name": r.course_name,
+        }
+        for r in results
+    ]

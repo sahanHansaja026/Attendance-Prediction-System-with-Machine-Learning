@@ -151,90 +151,77 @@ class _MyDashboardState extends State<MyDashboard> {
                         borderRadius: BorderRadius.circular(50),
                       ),
                       child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          Padding(
-                            padding: const EdgeInsets.only(left: 15, right: 6),
-                            child: GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => MyQrPage(),
-                                  ),
-                                );
-                              },
-                              child: Image.asset(
-                                "assets/images/qricon.png",
-                                width: 50,
-                                height: 50,
-                              ),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => MyQrPage(),
+                                ),
+                              );
+                            },
+                            child: Image.asset(
+                              "assets/images/qricon.png",
+                              width: 50,
+                              height: 50,
                             ),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 8, right: 6),
-                            child: GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => MyAnalysisPage(),
-                                  ),
-                                );
-                              },
-                              child: Image.asset(
-                                "assets/images/analysis.png",
-                                width: 50,
-                                height: 50,
-                              ),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => MyAnalysisPage(),
+                                ),
+                              );
+                            },
+                            child: Image.asset(
+                              "assets/images/analysis.png",
+                              width: 50,
+                              height: 50,
                             ),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 8, right: 6),
-                            child: GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => StudentGrade(),
-                                  ),
-                                );
-                              },
-                              child: Image.asset(
-                                "assets/images/study.png",
-                                width: 50,
-                                height: 50,
-                              ),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => StudentGrade(),
+                                ),
+                              );
+                            },
+                            child: Image.asset(
+                              "assets/images/study.png",
+                              width: 50,
+                              height: 50,
                             ),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 8, right: 6),
-                            child: GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => ShowAttendance(),
-                                  ),
-                                );
-                              },
-                              child: Image.asset(
-                                "assets/images/time.png",
-                                width: 50,
-                                height: 50,
-                              ),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ShowAttendance(),
+                                ),
+                              );
+                            },
+                            child: Image.asset(
+                              "assets/images/time.png",
+                              width: 50,
+                              height: 50,
                             ),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 8, right: 6),
-                            child: GestureDetector(
-                              onTap: () async {
-                                await logoutUser(context);
-                              },
-                              child: Image.asset(
-                                "assets/images/logout.png",
-                                width: 50,
-                                height: 50,
-                              ),
+
+                          GestureDetector(
+                            onTap: () async {
+                              await logoutUser(context);
+                            },
+                            child: Image.asset(
+                              "assets/images/logout.png",
+                              width: 50,
+                              height: 50,
                             ),
                           ),
                         ],
