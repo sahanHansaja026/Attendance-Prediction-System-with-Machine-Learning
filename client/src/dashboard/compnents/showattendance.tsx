@@ -60,26 +60,26 @@ function ShowAttendancePage() {
     return (
         <div className='attendacepage'>
             <h2>Attendance Records</h2>
-        <div className="attendance-container">
+            <div className="attendance-container">
 
-            <table className="attendance-table">
-                <thead>
-                    <tr>
-                        <th>Student Index</th>
-                        <th>Time</th>
-                        <th>Date</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {attendanceData.map((record, index) => (
-                        <tr key={index}>
-                            <td>{record.index}</td>
-                            <td>{record.time}</td>
-                            <td>{record.date}</td>
+                <table className="attendance-table">
+                    <thead>
+                        <tr>
+                            <th>Student Index</th>
+                            <th>Time</th>
+                            <th>Date</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {attendanceData.map((record, index) => (
+                            <tr key={index}>
+                                <td>{record.index}</td>
+                                <td>{record.time}</td>
+                                <td>{record.date}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
 
                 <LoadScript googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
                     <div className="google-map-container">

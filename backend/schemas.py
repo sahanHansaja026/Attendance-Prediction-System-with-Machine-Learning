@@ -176,3 +176,21 @@ class StudentResultResponseuser(BaseModel):
 
     class Config:
         orm_mode = True
+
+class AttendanceReport(BaseModel):
+    student_id: str
+    student_name: str
+    graduation_year: int
+
+    course_name: str
+    courseindex: str
+    owner: str
+
+    location_name: str
+    latitude: str
+    longitude: str
+
+    mark_at: datetime
+
+    class Config:
+        orm_mode = True

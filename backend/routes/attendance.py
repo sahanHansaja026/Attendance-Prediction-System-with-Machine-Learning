@@ -5,7 +5,7 @@ import pytz
 from typing import List
 from database import get_db
 import models
-from schemas import AttendanceCreate
+from schemas import AttendanceCreate, AttendanceReport
 
 router = APIRouter()
 
@@ -95,3 +95,30 @@ def get_attendance_info(student_id: str, db: Session = Depends(get_db)):
         })
     
     return result
+
+@router.get("/attendance/report", response_model=List[AttendanceReport])
+def get_attendance_report(db: Session = Depends(get_db)):
+    results = (
+        db.query(
+            models.Attendance.student_id,
+            models.Attendance.mark_at,
+            models.Attendance.latitude,
+            models.Attendance.longitude,
+
+            models.Sesstion.location_name,
+
+            models.Course.course_name,
+            models.Course.courseindex,
+            models.Course.owner,
+
+            models.Gust.name.label("student_name"),
+            models.Gust.graduation_year
+        )
+        .join(models.Sesstion, models.Attendance.session_id == models.Sesstion.sessionid)
+        .join(models.Course, models.Sesstion.module_id == models.Course.course_id)
+        .join(models.Gust, models.Attendance.student_id == models.Gust.index)
+        .order_by(models.Attendance.mark_at.desc())
+        .all()
+    )
+
+    return results

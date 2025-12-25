@@ -35,11 +35,6 @@ function ShowLocation() {
 
     return (
         <div className="map-page">
-            <div className="map-header">
-                <h2>📍 Locations Map</h2>
-                <p>View all saved locations on the map</p>
-            </div>
-
             <div className="map-card">
                 {loading ? (
                     <p className="loading-text">Loading locations...</p>

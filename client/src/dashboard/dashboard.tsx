@@ -22,6 +22,7 @@ import InsertLocations from "./compnents/insertlocation";
 import ShowButtonPage from "./compnents/showbuttons";
 import ShowCoursesPage from "./compnents/showcourses";
 import ShowLocation from "./compnents/showlocation";
+import AnalysisPage from "./compnents/analysis";
 
 type User = {
     username: string;
@@ -148,7 +149,7 @@ export default function Dashboard() {
 
                 <div className="pagecontainer">
                     {activePage === "home" && <HomePage setActivePage={setActivePage} />}
-                    {activePage === "analysis" && <div>Analysis Page Content</div>}
+                    {activePage === "analysis" && <AnalysisPage/>}
                     {activePage === "history" && <div>History Page Content</div>}
                     {activePage === "adddetail" && <ButtonsPage setActivePage1={setActivePage} />}
                     {activePage === "showinformations" && <ShowButtonPage setActivePage1={setActivePage} />}
