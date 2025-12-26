@@ -40,7 +40,7 @@ Key components include:
 
 The system includes a **feature importance graph** derived from our ML model, showing which factors most influence student attendance:
 
-![Attendance Feature Importance](./docs/feature_importance.png)
+![Attendance Feature Importance](https://github.com/sahanHansaja026/Attendance-Prediction-System-with-Machine-Learning/blob/sahan/image.png)
 
 > This graph helps educators make **data-driven decisions** by visualizing the relative impact of different features.
 
