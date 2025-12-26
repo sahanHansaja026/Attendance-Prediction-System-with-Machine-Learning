@@ -15,7 +15,9 @@ export default class App extends Component {
           <Route path='/' element={<LoginPage />} />
           <Route path='/signin' element={<SignUpPage />} />
           <Route path='/dashboard' element={<DashboardPage />} />
-          <Route path="/session_qr/:sessionId" element={<SessionQR />} />
+          <Route path="/session_qr/:sessionId" element={<SessionQR setActivePage={function (page: string): void {
+            throw new Error('Function not implemented.');
+          } } />} />
           <Route path="/showattendance/:sessionId" element={<ShowAttendancePage />} />
         </Routes>
       </BrowserRouter>

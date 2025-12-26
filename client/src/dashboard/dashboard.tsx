@@ -154,9 +154,11 @@ export default function Dashboard() {
                     {activePage === "adddetail" && <ButtonsPage setActivePage1={setActivePage} />}
                     {activePage === "showinformations" && <ShowButtonPage setActivePage1={setActivePage} />}
                     {activePage === "adduser" && <AddUsers />}
-                    {activePage === "showuser" && <ShowUsers setActivePage={function (page: string): void {
-                        throw new Error("Function not implemented.");
-                    } } />}
+                    {activePage === "showuser" && (
+                        <ShowUsers
+                            setActivePage={(page: string) => setActivePage(page)}
+                        />
+                    )}
                     {activePage === "insertlocations" && <InsertLocations />}
                     {activePage === "addresults" && <AddResultsPage />}
                     {activePage === "showcourses" && <ShowCoursesPage setActivePage={function (page: string): void {
