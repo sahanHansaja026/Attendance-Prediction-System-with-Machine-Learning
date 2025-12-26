@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from database import get_db, SessionLocal
 import models
 import random
-from schemas import AttendanceVerifyRequest
+from schemas import AttendanceVerifyRequest, VerifyQrRequest
 from fastapi_utils.tasks import repeat_every
 from datetime import datetime, timedelta, timezone
 router = APIRouter()
@@ -124,3 +124,23 @@ def rotate_pin_task():
         db.close()
 
 
+@router.post("/attendance/verify_qr")
+def verify_attendance_qr(data: VerifyQrRequest, db: Session = Depends(get_db)):
+    token_entry = db.query(models.SessionToken).filter(
+        models.SessionToken.session_id == data.session_id,
+        models.SessionToken.pin == data.pin
+    ).first()
+
+    if not token_entry:
+        raise HTTPException(status_code=400, detail="Invalid session or PIN")
+
+    if token_entry.expires_at < datetime.utcnow():
+        raise HTTPException(status_code=400, detail="PIN expired")
+
+    return {
+        "message": "Attendance verified successfully",
+        "pin": token_entry.pin,
+        "token": token_entry.token,
+        "expires_at": token_entry.expires_at,
+        "session_id": token_entry.session_id,
+    }

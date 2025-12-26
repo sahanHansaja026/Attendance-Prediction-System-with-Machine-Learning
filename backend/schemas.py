@@ -194,3 +194,7 @@ class AttendanceReport(BaseModel):
 
     class Config:
         orm_mode = True
+
+class VerifyQrRequest(BaseModel):
+    session_id: int
+    pin: int
