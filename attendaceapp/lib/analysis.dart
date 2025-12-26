@@ -16,14 +16,13 @@ class _MyAnalysisPageState extends State<MyAnalysisPage> {
   bool _isLoading = true;
   Map<String, dynamic>? _mlResult;
 
-  final PageController _pageController = PageController();
-  int _currentPage = 0;
-
   @override
   void initState() {
     super.initState();
     fetchMLRecommendation();
   }
+
+  // ================= API =================
 
   Future<void> fetchMLRecommendation() async {
     try {
@@ -32,14 +31,7 @@ class _MyAnalysisPageState extends State<MyAnalysisPage> {
       final response = await http.get(uri);
 
       if (response.statusCode == 200) {
-        var decoded = json.decode(response.body);
-
-        if (decoded['recommended_courses'] is String) {
-          decoded['recommended_courses'] = json.decode(
-            decoded['recommended_courses'],
-          );
-        }
-
+        final decoded = json.decode(response.body);
         setState(() {
           _mlResult = decoded;
           _isLoading = false;
@@ -48,7 +40,7 @@ class _MyAnalysisPageState extends State<MyAnalysisPage> {
         _setEmpty();
       }
     } catch (e) {
-      debugPrint("Error: $e");
+      debugPrint("Error fetching ML data: $e");
       _setEmpty();
     }
   }
@@ -64,33 +56,37 @@ class _MyAnalysisPageState extends State<MyAnalysisPage> {
     });
   }
 
-  void _launchURL(String url) async {
+  // ================= URL LAUNCH =================
+
+  Future<void> _launchURL(String? url) async {
+    if (url == null || url.isEmpty) return;
+
     final uri = Uri.parse(url);
     if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
+      await launchUrl(
+        uri,
+        mode: LaunchMode.externalApplication, // 🔥 opens browser
+      );
+    } else {
+      debugPrint("Could not launch $url");
     }
   }
 
+  // ================= UI =================
+
   @override
   Widget build(BuildContext context) {
-    final recommendedCourses = (_mlResult?['recommended_courses'] is List)
-        ? List.from(_mlResult!['recommended_courses'])
-        : [];
-
-    final internalCourses = recommendedCourses
-        .where((c) => c.containsKey('course_id'))
-        .toList();
-
-    final externalCourses = recommendedCourses
-        .where((c) => c.containsKey('url'))
-        .toList();
+    final courses =
+        (_mlResult?['recommended_courses'] is List)
+            ? List.from(_mlResult!['recommended_courses'])
+            : [];
 
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 0, 81, 255),
         title: const Text(
-          "Recommendations",
+          "Learning Recommendations",
           style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
         ),
         leading: IconButton(
@@ -98,8 +94,7 @@ class _MyAnalysisPageState extends State<MyAnalysisPage> {
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body:
-      _isLoading
+      body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : Padding(
               padding: const EdgeInsets.all(16),
@@ -107,27 +102,12 @@ class _MyAnalysisPageState extends State<MyAnalysisPage> {
                 children: [
                   _userInfoCard(),
                   const SizedBox(height: 16),
-                  _pageTabs(),
-                  const SizedBox(height: 12),
-                  Expanded(
-                    child: PageView(
-                      controller: _pageController,
-                      onPageChanged: (index) {
-                        setState(() => _currentPage = index);
-                      },
-                      children: [
-                        _externalCoursesView(externalCourses),
-                        _internalCoursesView(internalCourses),
-                      ],
-                    ),
-                  ),
+                  Expanded(child: _coursesView(courses)),
                 ],
               ),
             ),
     );
   }
-
-  // ================= UI COMPONENTS =================
 
   Widget _userInfoCard() {
     return Card(
@@ -139,7 +119,7 @@ class _MyAnalysisPageState extends State<MyAnalysisPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("Email: ${UserSession.email ?? 'No Email'}"),
+            Text("Email: ${UserSession.email ?? 'N/A'}"),
             const SizedBox(height: 6),
             Text("Index: ${UserSession.index}"),
             const SizedBox(height: 12),
@@ -168,121 +148,24 @@ class _MyAnalysisPageState extends State<MyAnalysisPage> {
     );
   }
 
-  Widget _pageTabs() {
-    return Row(
-      children: [
-        Expanded(child: _tabButton("External Resources", 0)),
-        Expanded(child: _tabButton("Internal Courses", 1)),
-      ],
-    );
-  }
-
-  Widget _tabButton(String title, int index) {
-    final selected = _currentPage == index;
-
-    return GestureDetector(
-      onTap: () {
-        _pageController.animateToPage(
-          index,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeInOut,
-        );
-      },
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(0),
-          border: Border(
-            top: const BorderSide(
-              color: Color.fromARGB(255, 255, 255, 255),
-              width: 3,
-            ),
-            left: const BorderSide(
-              color: Color.fromARGB(255, 255, 255, 255),
-              width: 3,
-            ),
-            right: const BorderSide(
-              color: Color.fromARGB(255, 255, 255, 255),
-              width: 3,
-            ),
-            bottom: BorderSide(
-              color: selected
-                  ? const Color.fromARGB(255, 13, 0, 255) // SELECTED
-                  : const Color.fromARGB(255, 255, 255, 255), // NOT SELECTED
-              width: 3,
-            ),
-          ),
-        ),
-
-        child: Center(
-          child: Text(
-            title,
-            style: TextStyle(
-              color: selected
-                  ? const Color.fromARGB(255, 0, 0, 0)
-                  : Colors.black87,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  // ================= PAGES =================
-
-  Widget _internalCoursesView(List courses) {
+  Widget _coursesView(List courses) {
     if (courses.isEmpty) {
-      return _emptyState("No internal courses found");
+      return _emptyState("No learning resources found");
     }
 
     return ListView.builder(
       itemCount: courses.length,
       itemBuilder: (context, index) {
-        final c = courses[index];
-        return Card(
-          elevation: 3,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          margin: const EdgeInsets.symmetric(vertical: 8),
-          child: ListTile(
-            leading: const Icon(
-              Icons.school,
-              color: Color.fromARGB(255, 0, 81, 255),
-            ),
-            title: Text(
-              c['course_name'] ?? '',
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-            subtitle: Text(
-              "Category: ${c['category']}\nSkills: ${c['related_skills']}",
-            ),
-          ),
-        );
-      },
-    );
-  }
+        final course = courses[index];
 
-  Widget _externalCoursesView(List courses) {
-    if (courses.isEmpty) {
-      return _emptyState("No external resources found");
-    }
-
-    return ListView.builder(
-      itemCount: courses.length,
-      itemBuilder: (context, index) {
-        final c = courses[index];
         return GestureDetector(
-          onTap: () => _launchURL(c['url']),
+          onTap: () => _launchURL(course['url']),
           child: Card(
             elevation: 3,
+            margin: const EdgeInsets.symmetric(vertical: 8),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
-            margin: const EdgeInsets.symmetric(vertical: 8),
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -291,13 +174,13 @@ class _MyAnalysisPageState extends State<MyAnalysisPage> {
                   Row(
                     children: [
                       const Icon(
-                        Icons.link,
+                        Icons.open_in_new,
                         color: Color.fromARGB(255, 0, 81, 255),
                       ),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          c['course_name'] ?? '',
+                          course['course_name'] ?? '',
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 16,
@@ -307,7 +190,7 @@ class _MyAnalysisPageState extends State<MyAnalysisPage> {
                     ],
                   ),
                   const SizedBox(height: 6),
-                  Text(c['snippet'] ?? ''),
+                  Text(course['snippet'] ?? ''),
                 ],
               ),
             ),
@@ -322,11 +205,8 @@ class _MyAnalysisPageState extends State<MyAnalysisPage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(
-            Icons.sentiment_dissatisfied,
-            size: 60,
-            color: Colors.grey,
-          ),
+          const Icon(Icons.sentiment_dissatisfied,
+              size: 60, color: Colors.grey),
           const SizedBox(height: 10),
           Text(text, style: const TextStyle(color: Colors.grey)),
         ],

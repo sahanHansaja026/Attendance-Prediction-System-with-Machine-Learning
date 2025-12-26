@@ -326,10 +326,36 @@ class _MyProfileEditState extends State<MyProfileEdit> {
                   ),
                   items:
                       [
-                            "BSc (Hons) Computer Science",
-                            "BSc (Hons) Software Engineering",
-                            "BSc (Hons) IT",
-                            "BSc (Hons) Data Science",
+                            // Engineering
+                            "Software Engineering",
+                            "Mechanical Engineering",
+                            "Civil Engineering",
+                            "Electrical Engineering",
+                            // IT
+                            "Computer Science",
+                            "Information Technology",
+                            "Cyber Security",
+                            "Data Science",
+                            // Medicine
+                            "Medicine",
+                            "Nursing",
+                            "Pharmacy",
+                            "Dentistry",
+                            // Arts
+                            "Music",
+                            "Visual Arts",
+                            "Performing Arts",
+                            "Literature",
+                            // Business
+                            "Business Administration",
+                            "Finance",
+                            "Marketing",
+                            "Economics",
+                            // Science
+                            "Mathematics",
+                            "Biology",
+                            "Chemistry",
+                            "Physics",
                           ]
                           .map(
                             (program) => DropdownMenuItem(
