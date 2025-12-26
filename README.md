@@ -66,7 +66,7 @@ The system includes a **feature importance graph** derived from our ML model, sh
 1. **Clone the repository**
 
 ```bash
-git clone https://github.com/yourusername/attendance-system.git
+git clone https://github.com/sahanHansaja026/Attendance-Prediction-System-with-Machine-Learning.git
 cd attendance-system
 ````
 Run Backend
