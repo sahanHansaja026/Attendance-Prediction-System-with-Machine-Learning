@@ -1,146 +1,177 @@
-import 'dart:io';
 import 'dart:convert';
+import 'package:attendaceapp/config/api.dart';
+import 'package:attendaceapp/eroor.dart';
+import 'package:attendaceapp/home.dart';
+import 'package:attendaceapp/session_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
-void main() {
-  runApp(const MainApp());
-}
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
 
-Future<void> LoginUser(String email, String password) async {
-  final url = Uri.parse('http://YOUR_BACKEND_IP:8000/login');
+  await UserSession.loadSession();
 
-  try {
-    final response = await http.post(
-      url,
-      headers: {"content-type": "appication/json"},
-      body: jsonEncode({"email": email, "password": password}),
-    );
-    if (response.statusCode == 200) {
-      // Login successful
-      final data = jsonDecode(response.body);
-      print("Login success: $data");
-    } else {
-      // Login failed
-      print("Error: ${response.statusCode} ${response.body}");
-    }
-  } catch (e) {
-    print("Exception: $e");
-  }
+  runApp(MainApp(isLoggedIn: UserSession.isLoggedIn()));
 }
 
 class MainApp extends StatelessWidget {
-  const MainApp({super.key});
+  final bool isLoggedIn;
+
+  const MainApp({super.key, required this.isLoggedIn});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(home: MyHomePage());
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: isLoggedIn ? MyDashboard() : MyHomePage(),
+    );
   }
 }
 
 class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key});
+
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  TextEditingController textController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
-  String result = "";
+  bool isLoading = false;
+  String message = "";
+
+  Future<void> loginUser(String email, String password) async {
+    final url = Uri.parse('$API_URL/gust_login');
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({"email": email, "password": password}),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString("access_token", data["access_token"]);
+        await prefs.setString("refresh_token", data["refresh_token"]);
+        await prefs.setString("name", data["user"]["name"]);
+        await prefs.setString("email", data["user"]["email"]);
+        await prefs.setString("index", data["user"]["index"]);
+
+        await UserSession.loadSession();
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => MyDashboard()),
+        );
+      } else {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) =>
+                ErrorPage(errorMessage: "Login failed: ${response.body}"),
+          ),
+        );
+      }
+    } catch (e) {
+      setState(() {
+        message = "Error: $e";
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
-          // Makes screen scrollable when keyboard appears
           child: Padding(
             padding: const EdgeInsets.all(20.0),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start, // Align left
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(height: 0),
-                // image input
+                const SizedBox(height: 20),
                 Center(
-                  // image want to in center
                   child: Image.asset(
                     'assets/images/login.png',
-                    width: 300,
-                    height: 300,
+                    width: 250,
+                    height: 250,
                   ),
                 ),
-
-                // text field // left
-                Text(
-                  "Welcome To SLTC ",
-                  style: TextStyle(fontSize: 24, color: Colors.black),
-                  textAlign: TextAlign.left,
+                const SizedBox(height: 20),
+                const Text(
+                  "Welcome To SLTC",
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
-
-                SizedBox(height: 5),
-
-                Text(
+                const SizedBox(height: 5),
+                const Text(
                   "Attendance Management System",
-                  style: TextStyle(fontSize: 24, color: Colors.black),
-                  textAlign: TextAlign.left,
+                  style: TextStyle(fontSize: 20),
                 ),
-
-                // input field
-                SizedBox(height: 20.0),
-
+                const SizedBox(height: 30),
                 TextField(
-                  controller: textController,
-                  decoration: InputDecoration(
+                  controller: emailController,
+                  decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: "Email",
                   ),
                 ),
-
-                SizedBox(height: 20.0),
-
-                // password input
+                const SizedBox(height: 20),
                 TextField(
                   controller: passwordController,
-                  obscureText: true, // hide text like dots
-                  decoration: InputDecoration(
+                  obscureText: true,
+                  decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: "Password",
                   ),
                 ),
-
-                SizedBox(height: 50),
-
-                // button
+                const SizedBox(height: 30),
                 Center(
                   child: ElevatedButton(
-                    onPressed: () {
-                      String email = textController.text;
-                      String password =passwordController.text;
+                    onPressed: isLoading
+                        ? null
+                        : () async {
+                            setState(() {
+                              isLoading = true;
+                              message = "";
+                            });
 
-                      LoginUser(email, password); // call the API
-                    },
+                            await loginUser(
+                              emailController.text,
+                              passwordController.text,
+                            );
+
+                            setState(() => isLoading = false);
+                          },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromARGB(255, 0, 81, 255),
-                      minimumSize: Size(400, 50),
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 5,
-                      ), // padding in button
+                      minimumSize: const Size(400, 50),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(
-                          20,
-                        ), // border redius
+                        borderRadius: BorderRadius.circular(20),
                       ),
-                      elevation: 5,
                     ),
-                    child: Text(
-                      "Login",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 25, color: Colors.white),
-                    ),
+                    child: isLoading
+                        ? const CircularProgressIndicator(color: Colors.white)
+                        : const Text(
+                            "Login",
+                            style: TextStyle(fontSize: 25, color: Colors.white),
+                          ),
                   ),
                 ),
+                const SizedBox(height: 20),
+                if (message.isNotEmpty)
+                  Center(
+                    child: Text(
+                      message,
+                      style: const TextStyle(fontSize: 18, color: Colors.red),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
               ],
             ),
           ),

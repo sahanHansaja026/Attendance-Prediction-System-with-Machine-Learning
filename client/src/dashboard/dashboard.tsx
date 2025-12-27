@@ -5,13 +5,24 @@ import HomeIcon from "../assets/images/icon1.svg";
 import AnalaysisIcon from "../assets/images/analy.svg";
 import HistoryIcon from "../assets/images/icon3.svg";
 import LOgoutIcon from "../assets/images/icon2.svg";
-import { useNavigate } from "react-router-dom";
 import AddUsersIcon from "../assets/images/icon4.svg";
+import AddDetails from "../assets/images/icon6.svg";
 
 // components
 import HomePage from "./compnents/create";
 import ShowUsers from "./compnents/showuser";
 import AddUsers from "./compnents/adduser";
+import SessionQR from "./compnents/qrcode";
+import ButtonsPage from "./compnents/button";
+import ShowAttendancePage from "./compnents/showattendance";
+import AddCourseDetails from "./compnents/addcourses";
+import AddResultsPage from "./compnents/addresults";
+import { useNavigate } from "react-router-dom";
+import InsertLocations from "./compnents/insertlocation";
+import ShowButtonPage from "./compnents/showbuttons";
+import ShowCoursesPage from "./compnents/showcourses";
+import ShowLocation from "./compnents/showlocation";
+import AnalysisPage from "./compnents/analysis";
 
 type User = {
     username: string;
@@ -22,7 +33,11 @@ type User = {
 export default function Dashboard() {
     const [user, setUser] = useState<User | null>(null);
     const [error, setError] = useState<string>("");
-    const [activePage, setActivePage] = useState("home");
+
+    // Load initial page from localStorage
+    const [activePage, setActivePage] = useState(() => {
+        return localStorage.getItem("activePage") || "home";
+    });
 
     const pageTitles: Record<string, string> = {
         home: "Create Session",
@@ -30,9 +45,23 @@ export default function Dashboard() {
         history: "History",
         showuser: "View Users",
         adduser: "Add New User",
+        sessionqr: "Mark Attendance",
+        attendaceshow: "Marked Attendance",
+        adddetail: "Add Informations",
+        addcourses: "Add Modules",
+        addresults: "Add Student Results",
+        insertlocations: "Add Locations",
+        showinformations: "Contents",
+        showcourses: "View Modules",
+        showlocations:"View Locations"
     };
 
     const navigate = useNavigate();
+
+    // Save activePage to localStorage whenever it changes
+    useEffect(() => {
+        localStorage.setItem("activePage", activePage);
+    }, [activePage]);
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -48,17 +77,16 @@ export default function Dashboard() {
                 }
             }
         };
-
         fetchUserData();
     }, [navigate]);
 
     if (error) return <div>Error: {error}</div>;
 
     const handleLogout = () => {
-        localStorage.removeItem("token");
-        localStorage.removeItem("username");
-
         if (window.confirm("Are you sure you want to logout?")) {
+            localStorage.removeItem("token");
+            localStorage.removeItem("username");
+            localStorage.removeItem("activePage");
             navigate("/");
         }
     };
@@ -72,18 +100,13 @@ export default function Dashboard() {
                     </div>
 
                     <div className="userprofile">
-                        {user ? (
-                            <p>{user.username}</p>
-                        ) : (
-                            <p>Loading user data...</p>
-                        )}
+                        {user ? <p>{user.username}</p> : <p>Loading user data...</p>}
                     </div>
                 </div>
             </div>
 
             <div className="maincontainer">
                 <div className="sidebar">
-
                     <div
                         className={`sidebar-item ${activePage === "home" ? "active" : ""}`}
                         onClick={() => setActivePage("home")}
@@ -106,10 +129,17 @@ export default function Dashboard() {
                     </div>
 
                     <div
-                        className={`sidebar-item ${activePage === "showuser" ? "active" : ""}`}
-                        onClick={() => setActivePage("showuser")}
+                        className={`sidebar-item ${activePage === "showinformations" ? "active" : ""}`}
+                        onClick={() => setActivePage("showinformations")}
                     >
                         <img src={AddUsersIcon} alt="add users" className="iconadd" />
+                    </div>
+
+                    <div
+                        className={`sidebar-item ${activePage === "adddetail" ? "active" : ""}`}
+                        onClick={() => setActivePage("adddetail")}
+                    >
+                        <img src={AddDetails} alt="add informations" className="iconadd" />
                     </div>
 
                     <div className="sidebar-item" onClick={handleLogout}>
@@ -118,17 +148,26 @@ export default function Dashboard() {
                 </div>
 
                 <div className="pagecontainer">
-                    {activePage === "home" && <HomePage />}
-                    {activePage === "analysis" && <div>Analysis Page Content</div>}
+                    {activePage === "home" && <HomePage setActivePage={setActivePage} />}
+                    {activePage === "analysis" && <AnalysisPage/>}
                     {activePage === "history" && <div>History Page Content</div>}
-
-                    {/* Show Users Page — pass setActivePage so button can open adduser */}
-                    {activePage === "showuser" && (
-                        <ShowUsers setActivePage={setActivePage} />
-                    )}
-
-                    {/* Add User Form Page */}
+                    {activePage === "adddetail" && <ButtonsPage setActivePage1={setActivePage} />}
+                    {activePage === "showinformations" && <ShowButtonPage setActivePage1={setActivePage} />}
                     {activePage === "adduser" && <AddUsers />}
+                    {activePage === "showuser" && (
+                        <ShowUsers
+                            setActivePage={(page: string) => setActivePage(page)}
+                        />
+                    )}
+                    {activePage === "insertlocations" && <InsertLocations />}
+                    {activePage === "addresults" && <AddResultsPage />}
+                    {activePage === "showcourses" && <ShowCoursesPage setActivePage={function (page: string): void {
+                        throw new Error("Function not implemented.");
+                    }} />}
+                    {activePage === "showlocation" && <ShowLocation />}
+                    {activePage === "addcourses" && <AddCourseDetails />}
+                    {activePage === "attendaceshow" && <ShowAttendancePage />}
+                    {activePage === "sessionqr" && <SessionQR setActivePage={setActivePage} />}
                 </div>
             </div>
         </div>

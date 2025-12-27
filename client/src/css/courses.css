@@ -1,0 +1,80 @@
+.coursepage {
+    display: flex;
+}
+
+.coursepage .courseform {
+    width: 88%;
+    padding: 0px 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.coursepage .form-title {
+    text-align: center;
+    font-size: 28px;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.coursepage .inputcontainer1 {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.coursepage .label1 {
+    font-size: 18px;
+    color: #000000;
+    font-weight: 500;
+}
+
+.coursepage input[type="text"],
+.coursepage input[type="number"],
+.coursepage select {
+    padding: 10px 12px;
+    width: 100%;
+    font-size: 16px;
+    border-bottom: 1px solid #000000;
+    border-top: 0px;
+    border-left: 0px;
+    border-right: 0px;
+    border-radius: 0px;
+}
+
+.coursepage input:focus,
+.coursepage select:focus {
+    border-bottom: 2px solid #001eff;
+    border-top: 0;
+    border-left: 0;
+    border-right: 0;
+    border-radius: 0;
+    outline: none;
+    transition: border-color 0.2s ease-in-out;
+}
+
+.coursepage .submit-btn {
+    padding: 12px;
+    font-size: 18px;
+    background-color: #3b6ff2;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: 0.3s;
+}
+
+.coursepage .submit-btn:hover {
+    background-color: #345ccc;
+}
+
+@media screen and (max-width: 650px) {
+    .coursepage .courseform {
+        padding: 30px 20px;
+    }
+
+    .coursepage .form-title {
+        font-size: 24px;
+    }
+}

@@ -5,6 +5,7 @@ import LoginPage from "./auth/login";
 import SignUpPage from './auth/signup';
 import DashboardPage from './dashboard/dashboard';
 import SessionQR from './dashboard/compnents/qrcode';
+import ShowAttendancePage from './dashboard/compnents/showattendance';
 
 export default class App extends Component {
   render() {
@@ -14,8 +15,10 @@ export default class App extends Component {
           <Route path='/' element={<LoginPage />} />
           <Route path='/signin' element={<SignUpPage />} />
           <Route path='/dashboard' element={<DashboardPage />} />
-          <Route path="/session_qr/:sessionId" element={<SessionQR />} />
-
+          <Route path="/session_qr/:sessionId" element={<SessionQR setActivePage={function (page: string): void {
+            throw new Error('Function not implemented.');
+          } } />} />
+          <Route path="/showattendance/:sessionId" element={<ShowAttendancePage />} />
         </Routes>
       </BrowserRouter>
     )

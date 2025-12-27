@@ -1,0 +1,84 @@
+.attendacepage {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f9f9f9;
+    min-height: 100vh;
+}
+
+.attendacepage h2 {
+    color: #1a73e8;
+    margin-bottom: 10px;
+    font-size: 28px;
+}
+
+.session-id {
+    font-size: 16px;
+    margin-bottom: 20px;
+    color: #555;
+}
+
+.attendance-container {
+    display: flex;
+    flex-direction: row;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+/* Table Styling */
+.attendance-table {
+    width: 100%;
+    max-width: 600px;
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+}
+
+.attendance-table th,
+.attendance-table td {
+    padding: 12px 16px;
+    text-align: left;
+}
+
+.attendance-table th {
+    background-color: #1a73e8;
+    color: white;
+    font-weight: 600;
+}
+
+.attendance-table tr:nth-child(even) {
+    background-color: #f1f5f9;
+}
+
+.attendance-table tr:hover {
+    background-color: #e0f0ff;
+    transition: background-color 0.3s ease;
+}
+
+/* Map Container Styling */
+.google-map-container {
+    flex: 1;
+    min-width: 400px;
+    height: 400px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive Layout */
+@media (max-width: 900px) {
+    .attendance-container {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .attendance-table,
+    .google-map-container {
+        max-width: 100%;
+        height: 300px;
+    }
+}

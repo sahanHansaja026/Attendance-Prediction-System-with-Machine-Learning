@@ -10,7 +10,16 @@ type User = {
     id: number;
 };
 
-function Create_Sesstion() {
+interface Course {
+    id: string;
+    name: string;
+}
+
+interface ShowUsersProps {
+    setActivePage: (page: string) => void;
+}
+
+function Create_Sesstion({ setActivePage }: ShowUsersProps) {
     const [user, setUser] = useState<User | null>(null);
     const [error, setError] = useState<string>("");
 
@@ -23,26 +32,27 @@ function Create_Sesstion() {
     const [endMinute, setEndMinute] = useState("");
     const [endPeriod, setEndPeriod] = useState("am");
 
-    // MODULE SEARCH
+    // MODULE SELECT
     const [searchModule, setSearchModule] = useState("");
+    const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
     const [showModuleDropdown, setShowModuleDropdown] = useState(false);
 
-    // LOCATION SEARCH
+    // LOCATION SELECT
     const [searchLocation, setSearchLocation] = useState("");
     const [showLocationDropdown, setShowLocationDropdown] = useState(false);
 
-    // COURSES FROM BACKEND
-    const [courses, setCourses] = useState<string[]>([]);
+    // COURSES LIST
+    const [courses, setCourses] = useState<Course[]>([]);
 
-    // LOCATION OPTIONS
+    // LOCATION LIST
     const locationList = ["Hall A", "Hall B", "Hall C", "Lab 1", "Lab 2", "Lab 3"];
-    const filteredLocations = locationList.filter((item) =>
-        item.toLowerCase().includes(searchLocation.toLowerCase())
+    const filteredLocations = locationList.filter((loc) =>
+        loc.toLowerCase().includes(searchLocation.toLowerCase())
     );
 
     // FILTER MODULES
-    const filteredModules = courses.filter((item) =>
-        item.toLowerCase().includes(searchModule.toLowerCase())
+    const filteredModules = courses.filter((course) =>
+        course.name.toLowerCase().includes(searchModule.toLowerCase())
     );
 
     // LOAD USER AND COURSES
@@ -60,8 +70,13 @@ function Create_Sesstion() {
         const fetchCourses = async () => {
             try {
                 const res = await axios.get(`${API_BASE_URL}/courses`);
-                const courseNames = res.data.map((course: any) => course.course_name);
-                setCourses(courseNames);
+
+                const formatted = res.data.map((course: any) => ({
+                    id: course.course_id,
+                    name: course.course_name
+                }));
+
+                setCourses(formatted);
             } catch (err) {
                 console.error("Error fetching courses:", err);
             }
@@ -71,36 +86,37 @@ function Create_Sesstion() {
         fetchCourses();
     }, []);
 
-    // HELPER: Convert time to 24h format
+    // TIME CONVERTER
     const convertTo24Hour = (hour: string, minute: string, period: string) => {
         let h = parseInt(hour);
         if (period === "pm" && h !== 12) h += 12;
         if (period === "am" && h === 12) h = 0;
-        const mm = minute.padStart(2, "0");
-        return `${h.toString().padStart(2, "0")}:${mm}:00`;
+        return `${h.toString().padStart(2, "0")}:${minute.padStart(2, "0")}:00`;
     };
+    
 
+    // SUBMIT
     const handleSubmit = async () => {
         if (!user) return alert("User not loaded");
-
-        const start_time = convertTo24Hour(startHour, startMinute, startPeriod);
-        const end_time = convertTo24Hour(endHour, endMinute, endPeriod);
+        if (!selectedCourseId) return alert("Please select a module");
 
         const payload = {
             userid: user.id,
-            module_name: searchModule,
+            module_id: selectedCourseId, // STORE COURSE ID
             location_name: searchLocation,
-            start_time,
-            end_time,
+            start_time: convertTo24Hour(startHour, startMinute, startPeriod),
+            end_time: convertTo24Hour(endHour, endMinute, endPeriod)
         };
 
         try {
             const response = await axios.post(`${API_BASE_URL}/create_session`, payload);
             const sessionId = response.data?.sessionid;
+
             if (!sessionId) {
-                alert("❌ Session ID is undefined! Check backend response and API_BASE_URL");
+                alert("❌ Session ID is undefined! Check backend response.");
                 return;
             }
+
             window.location.href = `/session_qr/${sessionId}`;
         } catch (err: any) {
             console.error(err);
@@ -113,55 +129,48 @@ function Create_Sesstion() {
     return (
         <div className="create">
             <div className="form">
+
                 {/* USER ID */}
                 <div className="inputcontainer">
                     <div className="label">Index Number</div>
-                    <input
-                        type="text"
-                        className="input"
-                        value={user ? user.username : ""}
-                        readOnly
-                    />
+                    <input type="text" className="input" value={user?.username || ""} readOnly />
                 </div>
 
-                {/* MODULE SEARCH */}
+                {/* MODULE SELECT */}
                 <div className="inputcontainer">
                     <div className="label">Module Name</div>
                     <div className="select-container" style={{ position: "relative" }}>
                         <input
                             type="text"
                             className="input"
-                            placeholder="Type your module code or name"
+                            placeholder="Type module name"
                             value={searchModule}
                             onChange={(e) => {
                                 setSearchModule(e.target.value);
                                 setShowModuleDropdown(true);
-                                setShowLocationDropdown(false);
                             }}
-                            onFocus={() => {
-                                setShowModuleDropdown(true);
-                                setShowLocationDropdown(false);
-                            }}
+                            onFocus={() => setShowModuleDropdown(true)}
                         />
+
                         {showModuleDropdown && (
-                            <div
-                                className="dropdown">
+                            <div className="dropdown">
                                 {filteredModules.length > 0 ? (
-                                    filteredModules.map((option) => (
+                                    filteredModules.map((course) => (
                                         <div
-                                            key={option}
+                                            key={course.id}
                                             className="option"
+                                            onClick={() => {
+                                                setSearchModule(course.name);
+                                                setSelectedCourseId(course.id);
+                                                setShowModuleDropdown(false);
+                                            }}
                                             style={{
                                                 padding: "10px",
                                                 cursor: "pointer",
-                                                borderBottom: "1px solid #eee",
-                                            }}
-                                            onClick={() => {
-                                                setSearchModule(option);
-                                                setShowModuleDropdown(false);
+                                                borderBottom: "1px solid #eee"
                                             }}
                                         >
-                                            {option}
+                                            {course.name}
                                         </div>
                                     ))
                                 ) : (
@@ -172,44 +181,40 @@ function Create_Sesstion() {
                     </div>
                 </div>
 
-                {/* LOCATION SEARCH */}
+                {/* LOCATION SELECT */}
                 <div className="inputcontainer">
                     <div className="label">Location Name</div>
                     <div className="select-container" style={{ position: "relative" }}>
                         <input
                             type="text"
                             className="input"
-                            placeholder="In your lecture hall or virtual room"
+                            placeholder="Lecture hall"
                             value={searchLocation}
                             onChange={(e) => {
                                 setSearchLocation(e.target.value);
                                 setShowLocationDropdown(true);
-                                setShowModuleDropdown(false);
                             }}
-                            onFocus={() => {
-                                setShowLocationDropdown(true);
-                                setShowModuleDropdown(false);
-                            }}
+                            onFocus={() => setShowLocationDropdown(true)}
                         />
+
                         {showLocationDropdown && (
-                            <div
-                                className="dropdown">
+                            <div className="dropdown">
                                 {filteredLocations.length > 0 ? (
-                                    filteredLocations.map((option) => (
+                                    filteredLocations.map((loc) => (
                                         <div
-                                            key={option}
+                                            key={loc}
                                             className="option"
+                                            onClick={() => {
+                                                setSearchLocation(loc);
+                                                setShowLocationDropdown(false);
+                                            }}
                                             style={{
                                                 padding: "10px",
                                                 cursor: "pointer",
-                                                borderBottom: "1px solid #eee",
-                                            }}
-                                            onClick={() => {
-                                                setSearchLocation(option);
-                                                setShowLocationDropdown(false);
+                                                borderBottom: "1px solid #eee"
                                             }}
                                         >
-                                            {option}
+                                            {loc}
                                         </div>
                                     ))
                                 ) : (
@@ -220,10 +225,11 @@ function Create_Sesstion() {
                     </div>
                 </div>
 
-                {/* TIME SELECTION */}
+                {/* TIME */}
                 <div className="inputcontainer">
                     <div className="label">Time</div>
                     <div className="time-row">
+
                         {/* START TIME */}
                         <div className="time-input">
                             <input
@@ -241,10 +247,7 @@ function Create_Sesstion() {
                                 value={startMinute}
                                 onChange={(e) => setStartMinute(e.target.value)}
                             />
-                            <select
-                                value={startPeriod}
-                                onChange={(e) => setStartPeriod(e.target.value)}
-                            >
+                            <select value={startPeriod} onChange={(e) => setStartPeriod(e.target.value)}>
                                 <option value="am">am</option>
                                 <option value="pm">pm</option>
                             </select>
@@ -269,10 +272,7 @@ function Create_Sesstion() {
                                 value={endMinute}
                                 onChange={(e) => setEndMinute(e.target.value)}
                             />
-                            <select
-                                value={endPeriod}
-                                onChange={(e) => setEndPeriod(e.target.value)}
-                            >
+                            <select value={endPeriod} onChange={(e) => setEndPeriod(e.target.value)}>
                                 <option value="am">am</option>
                                 <option value="pm">pm</option>
                             </select>
@@ -283,6 +283,7 @@ function Create_Sesstion() {
                 <button className="signin" onClick={handleSubmit}>
                     Next
                 </button>
+
             </div>
         </div>
     );

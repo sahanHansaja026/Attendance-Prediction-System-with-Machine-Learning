@@ -1,5 +1,5 @@
-from pydantic import BaseModel, EmailStr, Field,constr # type: ignore
-from typing import Optional
+from pydantic import BaseModel, EmailStr, Field,constr 
+from typing import Dict, List, Optional
 from datetime import datetime
 from datetime import date
 import pytz
@@ -32,21 +32,17 @@ class UserOut(BaseModel):
     class Config:
         orm_mode = True
 
-# Session Schemas
-# -----------------------------
-# Input schema
 class SesstionCreate(BaseModel):
     userid: int
-    module_name: str
+    module_id: int
     location_name: str
     start_time: str
     end_time: str
 
-# Response schema
 class SesstionResponse(BaseModel):
     sessionid: int
     userid: int
-    module_name: str
+    module_id: int
     location_name: str
     start_time: str
     end_time: str
@@ -65,7 +61,8 @@ class CourseResponse(BaseModel):
     course_id: int
     course_name: str
     courseindex: str
-    owner: int
+    owner: str
+    credits: int 
 
     class Config:
         orm_mode = True
@@ -87,3 +84,117 @@ class GustResponse(BaseModel):
 
     class Config:
         orm_mode = True
+
+class GustLogin(BaseModel):
+    email: str
+    password: str
+
+class TokenData(BaseModel):
+    email: str
+
+class AttendanceVerifyRequest(BaseModel):
+    pin: int
+
+class AttendanceCreate(BaseModel):
+    session_id: int
+    student_id: str
+    latitude: str
+    longitude: str
+
+    class Config:
+        from_attributes = True
+
+class CourseBase(BaseModel):
+    course_name: str
+    credits: int
+    courseindex: str
+    owner: str
+    category: Optional[str] = None
+    related_skills: Optional[str] = None
+
+
+class CourseCreate(CourseBase):
+    pass
+
+class StudentProfileBase(BaseModel):
+    degree_program: Optional[str] = None
+    current_year: Optional[int] = None
+    skills: Optional[str] = None 
+    career_goal: Optional[str] = None
+    full_name:Optional[str]= None
+
+class StudentProfileUpdate(StudentProfileBase):
+    pass
+
+class StudentProfileOut(StudentProfileBase):
+    user_id: str
+    profileimage: Optional[str] = None 
+
+    class Config:
+        orm_mode = True
+        
+class StudentResultCreate(BaseModel):
+    user_id: str
+    degree_id: int
+    grade: Optional[str] = None
+    marks: Optional[str] = None   # ✔ STRING
+    completed: Optional[bool] = True
+
+
+class StudentResultResponse(StudentResultCreate):
+    result_id: int
+
+    class Config:
+        from_attributes = True
+
+class LocationCreate(BaseModel):
+    name: str
+    latitude: float
+    longitude: float
+
+class LocationResponse(BaseModel):
+    location_id: int
+    name: str
+    latitude: float
+    longitude: float
+
+    class Config:
+        orm_mode = True
+class MLRecommendationResponse(BaseModel):
+    user_id: str
+    relevance: int
+    confidence: float
+    recommended_courses: Optional[List[Dict]] = []
+    
+class StudentResultResponseuser(BaseModel):
+    result_id: int
+    user_id: str
+    grade: str | None
+    marks: str | None
+    completed: bool
+    course_name: str
+
+    class Config:
+        orm_mode = True
+
+class AttendanceReport(BaseModel):
+    student_id: str
+    student_name: str
+    graduation_year: int
+
+    course_name: str
+    courseindex: str
+    owner: str
+
+    location_name: str
+    latitude: str
+    longitude: str
+
+    mark_at: datetime
+
+    class Config:
+        orm_mode = True
+
+class VerifyQrRequest(BaseModel):
+    session_id: int
+    pin: int

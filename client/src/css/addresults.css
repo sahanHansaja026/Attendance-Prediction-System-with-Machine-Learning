@@ -1,0 +1,123 @@
+/* PAGE */
+.addresults-page {
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 30px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    font-family: "Segoe UI", sans-serif;
+}
+
+/* ERROR */
+.addresults-page .error {
+    color: #d32f2f;
+    margin-bottom: 15px;
+    font-weight: 500;
+}
+
+/* INPUT CONTAINERS */
+.addresults-page .inputcontainer,
+.addresults-page .inputcontainer2 {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+.addresults-page .inputcontainer2 {
+    min-width: 220px;
+}
+
+/* LABEL */
+.addresults-page .label {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #333;
+}
+
+/* INPUT */
+.addresults-page .input {
+    padding: 10px 12px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    transition: border-color 0.2s ease;
+}
+
+.addresults-page .input:focus {
+    outline: none;
+    border-color: #1976d2;
+}
+
+/* FLEX ROW FOR RESULTS */
+.addresults-page .flexinsert {
+    display: flex;
+    gap: 20px;
+    align-items: flex-end;
+    margin-bottom: 20px;
+    padding: 15px;
+    background: #f9fafb;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+}
+
+/* SELECT CONTAINER */
+.addresults-page .select-container {
+    position: relative;
+}
+
+/* DROPDOWN */
+.addresults-page .dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    max-height: 220px;
+    overflow-y: auto;
+    z-index: 1000;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+}
+
+/* OPTION */
+.addresults-page .option {
+    padding: 10px 12px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.2s ease;
+}
+
+.addresults-page .option:hover {
+    background: #1976d2;
+    color: #ffffff;
+}
+
+/* BUTTON */
+.addresults-page .button {
+    margin-top: 20px;
+    padding: 12px 24px;
+    background: #1976d2;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.25s ease, transform 0.15s ease;
+}
+
+.addresults-page .button:hover {
+    background: #125aa0;
+    transform: translateY(-1px);
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+    .flexinsert {
+        flex-direction: column;
+    }
+}
